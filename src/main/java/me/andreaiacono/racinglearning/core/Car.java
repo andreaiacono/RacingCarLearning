@@ -2,6 +2,8 @@ package me.andreaiacono.racinglearning.core;
 
 public class Car {
 
+    private static final int MAX_SPEED = 20;
+
     private double heading;
     private double speed;
 
@@ -13,12 +15,11 @@ public class Car {
     }
 
     public void accelerate(double qty) {
-        speed += qty;
+        speed = Math.min(speed + qty, MAX_SPEED);
     }
 
     public void brake(double qty) {
-        speed -= qty;
-        if (speed < 0) speed = 0;
+        speed = Math.max(speed - qty, 0);
     }
 
     public void steer(double angle) {
@@ -39,6 +40,20 @@ public class Car {
 
     public int getY() {
         return y;
+    }
+
+    public void updatePosition() {
+        x+=speed;
+    }
+
+    @Override
+    public String toString() {
+        return "{\"Car\":{"
+                + "                        \"heading\":\"" + heading + "\""
+                + ",                         \"speed\":\"" + speed + "\""
+                + ",                         \"x\":\"" + x + "\""
+                + ",                         \"y\":\"" + y + "\""
+                + "}}";
     }
 }
 

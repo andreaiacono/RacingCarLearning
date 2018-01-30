@@ -1,42 +1,47 @@
 package me.andreaiacono.racinglearning.misc;
 
+import me.andreaiacono.racinglearning.core.Car;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class DrivingKeyListener implements KeyListener {
 
-    boolean upPressed, downPressed, leftPressed, rightPressed;
+    private final Car car;
 
-    @Override
-    public void keyTyped(KeyEvent e) {
-
+    public DrivingKeyListener(Car car) {
+        this.car = car;
     }
 
     @Override
     public void keyPressed(KeyEvent ke) {
-        switchKeys(ke, true);
+        switchKeys(ke);
     }
 
     @Override
     public void keyReleased(KeyEvent ke) {
-        switchKeys(ke, false);
+        switchKeys(ke);
     }
 
-    void switchKeys(KeyEvent keyEvent, boolean isPressed) {
+    void switchKeys(KeyEvent keyEvent) {
         switch (keyEvent.getKeyCode()) {
             case KeyEvent.VK_UP:
-                upPressed = isPressed;
+                car.accelerate(1);
                 break;
             case KeyEvent.VK_DOWN:
-                downPressed = isPressed;
+                car.brake(1);
                 break;
             case KeyEvent.VK_LEFT:
-                leftPressed = isPressed;
+                car.steer(-5);
                 break;
             case KeyEvent.VK_RIGHT:
-                rightPressed = isPressed;
+                car.steer(5);
                 break;
         }
-        System.out.print("\rup pressed: " + upPressed + " , down pressed: " + downPressed +" ,  leftPressed: " + leftPressed + " rightPressde: " + rightPressed);
+        System.out.print("\r" + car);
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
     }
 }
