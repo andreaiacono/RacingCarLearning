@@ -2,7 +2,9 @@ package me.andreaiacono.racinglearning.core;
 
 public class Car {
 
-    private static final int MAX_SPEED = 20;
+    private static final int MAX_SPEED = 10;
+    private static final int MAX_STEERING_ANGLE = 35;
+
 
     private double heading;
     private double speed;
@@ -23,7 +25,7 @@ public class Car {
     }
 
     public void steer(double angle) {
-        heading = (heading + angle) % 360;
+        heading = Math.max(-MAX_STEERING_ANGLE, Math.min(heading+angle, MAX_STEERING_ANGLE));
     }
 
     public double getHeading() {
@@ -44,6 +46,7 @@ public class Car {
 
     public void updatePosition() {
         x+=speed;
+        brake(0.2);
     }
 
     @Override
