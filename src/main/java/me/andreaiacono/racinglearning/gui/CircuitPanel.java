@@ -28,7 +28,7 @@ public class CircuitPanel extends JPanel  {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(Color.LIGHT_GRAY  );
         g2d.fillRect(car.getX(), car.getY(), 25, 10);
-        g2d.drawString("speed: " + car.getSpeed() + " " + car.getHeading(), car.getX(), car.getY());
+        g2d.drawString(car.toString(), car.getX(), car.getY());
     }
 
 }

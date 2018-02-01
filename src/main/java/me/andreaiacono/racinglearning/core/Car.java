@@ -1,13 +1,14 @@
 package me.andreaiacono.racinglearning.core;
 
+
 public class Car {
 
+    private static final double AUTO_SLOW_DOWN = 0.2;
     private static final int MAX_SPEED = 10;
     private static final int MAX_STEERING_ANGLE = 35;
 
-
-    private double heading;
-    private double speed;
+    // the velocity of the car is a 2D vector formed by the speed and the direction
+    private Velocity velocity = new Velocity(0, 0);
 
     private int x, y;
 
@@ -17,23 +18,16 @@ public class Car {
     }
 
     public void accelerate(double qty) {
-        speed = Math.min(speed + qty, MAX_SPEED);
+        velocity.speed = Math.min(velocity.speed + qty, MAX_SPEED);
     }
 
     public void brake(double qty) {
-        speed = Math.max(speed - qty, 0);
+        velocity.speed = Math.max(velocity.speed - qty, 0);;
     }
 
     public void steer(double angle) {
-        heading = Math.max(-MAX_STEERING_ANGLE, Math.min(heading+angle, MAX_STEERING_ANGLE));
-    }
-
-    public double getHeading() {
-        return heading;
-    }
-
-    public double getSpeed() {
-        return speed;
+        double heading = Math.max(-MAX_STEERING_ANGLE, Math.min(angle, MAX_STEERING_ANGLE));
+        velocity.direction = (velocity.direction + heading) % 360;
     }
 
     public int getX() {
@@ -45,18 +39,50 @@ public class Car {
     }
 
     public void updatePosition() {
-        x+=speed;
-        brake(0.2);
+        x += Math.cos(Math.toRadians(velocity.direction)) * velocity.speed;
+        y += Math.sin(Math.toRadians(velocity.direction)) * velocity.speed;
+
+        brake(AUTO_SLOW_DOWN);
+    }
+
+    public Velocity getVelocity() {
+        return velocity;
     }
 
     @Override
     public String toString() {
-        return "{\"Car\":{"
-                + "                        \"heading\":\"" + heading + "\""
-                + ",                         \"speed\":\"" + speed + "\""
-                + ",                         \"x\":\"" + x + "\""
-                + ",                         \"y\":\"" + y + "\""
-                + "}}";
+        final StringBuilder sb = new StringBuilder("Car{");
+        sb.append(velocity);
+        sb.append(", x=").append(x);
+        sb.append(", y=").append(y);
+        sb.append('}');
+        return sb.toString();
+    }
+
+    static class Velocity {
+
+        // the direction in degrees
+        double direction;
+        double speed;
+
+        public Velocity(double speed, double direction) {
+            this.speed = speed;
+            this.direction = direction;
+        }
+
+        public Velocity normalize() {
+            double size = Math.sqrt(speed * speed + direction * direction);
+            return new Velocity(speed / size, direction / size);
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("Velocity{");
+            sb.append("direction=").append(direction);
+            sb.append(", speed=").append(speed);
+            sb.append('}');
+            return sb.toString();
+        }
     }
 }
 

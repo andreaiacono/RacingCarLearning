@@ -8,6 +8,7 @@ import java.awt.event.KeyListener;
 public class DrivingKeyListener implements KeyListener {
 
     private final Car car;
+    boolean upPressed, downPressed, leftPressed, rightPressed;
 
     public DrivingKeyListener(Car car) {
         this.car = car;
@@ -15,33 +16,46 @@ public class DrivingKeyListener implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent ke) {
-        switchKeys(ke);
+        switchKeys(ke, true);
     }
 
     @Override
     public void keyReleased(KeyEvent ke) {
-        switchKeys(ke);
+        switchKeys(ke, false);
     }
 
-    void switchKeys(KeyEvent keyEvent) {
+    void switchKeys(KeyEvent keyEvent, boolean isPressed) {
         switch (keyEvent.getKeyCode()) {
             case KeyEvent.VK_UP:
-                car.accelerate(1);
+                upPressed = isPressed;
                 break;
             case KeyEvent.VK_DOWN:
-                car.brake(1);
+                downPressed = isPressed;
                 break;
             case KeyEvent.VK_LEFT:
-                car.steer(-5);
+                leftPressed = isPressed;
                 break;
             case KeyEvent.VK_RIGHT:
-                car.steer(5);
+                rightPressed = isPressed;
                 break;
         }
-        System.out.print("\r" + car);
+        System.out.print("\r" + car + "  up pressed: " + upPressed + ", down pressed: " + downPressed +", leftPressed: " + leftPressed + " rightPressde: " + rightPressed);
+        if (upPressed) {
+            car.accelerate(0.4);
+        }
+        if (downPressed) {
+            car.brake(0.8);
+        }
+        if (leftPressed) {
+            car.steer(-8);
+        }
+        if (rightPressed) {
+            car.steer(8);
+        }
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
+
     }
 }

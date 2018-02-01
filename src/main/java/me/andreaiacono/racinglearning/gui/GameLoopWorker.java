@@ -29,7 +29,11 @@ public class GameLoopWorker extends SwingWorker<Void, Void> {
             long startTime = System.currentTimeMillis();
 
             // updates the position of the car
-            car.updatePosition();
+            try {
+                car.updatePosition();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             // refreshes the screen with the new position
             circuitPanel.repaint();
