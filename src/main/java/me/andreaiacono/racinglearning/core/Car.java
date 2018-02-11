@@ -5,12 +5,12 @@ public class Car {
 
     private static final double AUTO_SLOW_DOWN = 0.2;
     private static final int MAX_SPEED = 10;
-    private static final int MAX_STEERING_ANGLE = 35;
+    private static final int MAX_STEERING_ANGLE = 45;
 
     // the velocity of the car is a 2D vector formed by the speed and the direction
     private Velocity velocity = new Velocity(0, 0);
 
-    private int x, y;
+    private double x, y;
 
     public Car(int x, int y) {
         this.x = x;
@@ -27,15 +27,15 @@ public class Car {
 
     public void steer(double angle) {
         double heading = Math.max(-MAX_STEERING_ANGLE, Math.min(angle, MAX_STEERING_ANGLE));
-        velocity.direction = (velocity.direction + heading) % 360;
-    }
+        velocity.direction = (velocity.direction + heading) % 360.0;
+   }
 
     public int getX() {
-        return x;
+        return (int) x;
     }
 
     public int getY() {
-        return y;
+        return (int) y;
     }
 
     public void updatePosition() {
@@ -48,6 +48,7 @@ public class Car {
     public Velocity getVelocity() {
         return velocity;
     }
+
 
     @Override
     public String toString() {

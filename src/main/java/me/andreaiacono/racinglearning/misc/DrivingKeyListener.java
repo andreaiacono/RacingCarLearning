@@ -1,18 +1,11 @@
 package me.andreaiacono.racinglearning.misc;
 
-import me.andreaiacono.racinglearning.core.Car;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class DrivingKeyListener implements KeyListener {
 
-    private final Car car;
-    boolean upPressed, downPressed, leftPressed, rightPressed;
-
-    public DrivingKeyListener(Car car) {
-        this.car = car;
-    }
+    private final Directions directions = new Directions();
 
     @Override
     public void keyPressed(KeyEvent ke) {
@@ -27,35 +20,27 @@ public class DrivingKeyListener implements KeyListener {
     void switchKeys(KeyEvent keyEvent, boolean isPressed) {
         switch (keyEvent.getKeyCode()) {
             case KeyEvent.VK_UP:
-                upPressed = isPressed;
+                directions.upPressed = isPressed;
                 break;
             case KeyEvent.VK_DOWN:
-                downPressed = isPressed;
+                directions.downPressed = isPressed;
                 break;
             case KeyEvent.VK_LEFT:
-                leftPressed = isPressed;
+                directions.leftPressed = isPressed;
                 break;
             case KeyEvent.VK_RIGHT:
-                rightPressed = isPressed;
+                directions.rightPressed = isPressed;
                 break;
         }
-        System.out.print("\r" + car + "  up pressed: " + upPressed + ", down pressed: " + downPressed +", leftPressed: " + leftPressed + " rightPressde: " + rightPressed);
-        if (upPressed) {
-            car.accelerate(0.4);
-        }
-        if (downPressed) {
-            car.brake(0.8);
-        }
-        if (leftPressed) {
-            car.steer(-8);
-        }
-        if (rightPressed) {
-            car.steer(8);
-        }
+//        System.out.print("\r  up pressed: " + directions.upPressed + ", down pressed: " + directions.downPressed +", leftPressed: " + directions.leftPressed + " rightPressde: " + directions.rightPressed);
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
+        System.out.println("key typed: " + e);
+    }
 
+    public Directions getDirections() {
+        return directions;
     }
 }

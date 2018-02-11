@@ -1,6 +1,7 @@
 package me.andreaiacono.racinglearning.gui;
 
 import me.andreaiacono.racinglearning.core.Car;
+import me.andreaiacono.racinglearning.misc.DrivingKeyListener;
 
 import javax.swing.*;
 
@@ -8,6 +9,7 @@ public class MainFrame extends JFrame {
 
     private final Car car;
     private final GameLoopWorker gameLoopWorker;
+    private final DrivingKeyListener listener = new DrivingKeyListener();
 
     public MainFrame() throws Exception {
 
@@ -19,12 +21,12 @@ public class MainFrame extends JFrame {
         car = new Car(100, 100);
 
         // creates and adds the circuit to this window
-        CircuitPanel panel = new CircuitPanel(car);
+        CircuitPanel panel = new CircuitPanel(car, listener);
         panel.setFocusable(true);
         add(panel);
 
         // starts the game
-        gameLoopWorker = new GameLoopWorker(car, panel);
+        gameLoopWorker = new GameLoopWorker(car, panel, listener);
         gameLoopWorker.execute();
 
         setVisible(true);
