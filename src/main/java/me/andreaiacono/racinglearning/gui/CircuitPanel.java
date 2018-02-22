@@ -14,6 +14,7 @@ import java.util.Date;
 
 public class CircuitPanel extends JPanel {
 
+    private final String CIRCUIT_FILENAME = "circuit.png";
     private final Image circuitBackground;
     private final Car car;
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss.SSS");
@@ -21,7 +22,7 @@ public class CircuitPanel extends JPanel {
     private BufferedImage bufferedImage;
 
     public CircuitPanel(Car car, DrivingKeyListener listener) throws Exception {
-        circuitBackground = ImageIO.read(ClassLoader.getSystemResource("background.png"));
+        circuitBackground = ImageIO.read(ClassLoader.getSystemResource(CIRCUIT_FILENAME));
 
         this.car = car;
         setFocusable(true);
