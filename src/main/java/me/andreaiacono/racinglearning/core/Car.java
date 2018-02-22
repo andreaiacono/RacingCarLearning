@@ -4,12 +4,13 @@ package me.andreaiacono.racinglearning.core;
 public class Car {
 
     private static final double AUTO_SLOW_DOWN = 0.2;
-    private static final int MAX_SPEED = 10;
+    private static final int MAX_SPEED = 8;
     private static final int MAX_STEERING_ANGLE = 45;
 
     // the velocity of the car is a 2D vector formed by the speed and the direction
     private Velocity velocity = new Velocity(0, 0);
 
+    // the position of the car (as of the middle point)
     private double x, y;
 
     public Car(int x, int y) {
@@ -38,6 +39,10 @@ public class Car {
         return (int) y;
     }
 
+    public double getDirection() {
+        return velocity.direction;
+    }
+
     public void updatePosition() {
         x += Math.cos(Math.toRadians(velocity.direction)) * velocity.speed;
         y += Math.sin(Math.toRadians(velocity.direction)) * velocity.speed;
@@ -54,8 +59,8 @@ public class Car {
     public String toString() {
         final StringBuilder sb = new StringBuilder("Car{");
         sb.append(velocity);
-        sb.append(", x=").append(x);
-        sb.append(", y=").append(y);
+        sb.append(", x=").append((int)x);
+        sb.append(", y=").append((int)y);
         sb.append('}');
         return sb.toString();
     }
@@ -79,11 +84,12 @@ public class Car {
         @Override
         public String toString() {
             final StringBuilder sb = new StringBuilder("Velocity{");
-            sb.append("direction=").append(direction);
-            sb.append(", speed=").append(speed);
+            sb.append("direction=").append((int)direction);
+            sb.append(", speed=").append((int)speed);
             sb.append('}');
             return sb.toString();
         }
+
     }
 }
 

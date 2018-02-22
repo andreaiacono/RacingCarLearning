@@ -50,6 +50,9 @@ public class GameLoopWorker extends SwingWorker<Void, Void> {
             // checks for input
             if (manual) {
                 updateCar(listener.getDirections());
+                if (circuitPanel.isCarOutsideCircuit()) {
+                    isRunning = false;
+                }
             }
             else {
                 // reads input data from RL algorithm
@@ -61,6 +64,7 @@ public class GameLoopWorker extends SwingWorker<Void, Void> {
             Thread.sleep(remainingTimeToScreenUpdate);
         }
 
+        System.exit(0);
         return null;
     }
 
