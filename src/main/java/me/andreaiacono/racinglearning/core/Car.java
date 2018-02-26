@@ -6,6 +6,7 @@ public class Car {
     private static final double AUTO_SLOW_DOWN = 0.2;
     private static final int MAX_SPEED = 8;
     private static final int MAX_STEERING_ANGLE = 45;
+    private boolean isOnTrack;
 
     // the velocity of the car is a 2D vector formed by the speed and the direction
     private Velocity velocity = new Velocity(0, 0);
@@ -48,10 +49,19 @@ public class Car {
         y += Math.sin(Math.toRadians(velocity.direction)) * velocity.speed;
 
         brake(AUTO_SLOW_DOWN);
+
+        // if the car is outside the track, it slows down more
+        if (!isOnTrack) {
+            brake(getVelocity().speed/4);
+        }
     }
 
     public Velocity getVelocity() {
         return velocity;
+    }
+
+    public void setIsOnTrack(boolean isOnTrack) {
+        this.isOnTrack = isOnTrack;
     }
 
 

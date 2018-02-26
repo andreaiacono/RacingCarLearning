@@ -18,7 +18,7 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         // creates the car
-        car = new Car(100, 100);
+        car = new Car(610, 320);
 
         // creates and adds the circuit to this window
         CircuitPanel panel = new CircuitPanel(car, listener);

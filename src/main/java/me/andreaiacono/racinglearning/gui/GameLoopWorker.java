@@ -18,7 +18,6 @@ public class GameLoopWorker extends SwingWorker<Void, Void> {
     private Car car;
     private CircuitPanel circuitPanel;
     private DrivingKeyListener listener;
-    private boolean isRunning = true;
 
     public GameLoopWorker(Car car, CircuitPanel circuitPanel, DrivingKeyListener listener) {
         this.car = car;
@@ -29,29 +28,32 @@ public class GameLoopWorker extends SwingWorker<Void, Void> {
     @Override
     protected Void doInBackground() throws Exception {
 
-        while (isRunning) {
+        long raceStartTime = System.currentTimeMillis();
+
+        while (!circuitPanel.isLapCompleted()) {
 
             long startTime = System.currentTimeMillis();
 
             // updates the position of the car
             try {
+                car.setIsOnTrack(circuitPanel.isCarOnTrack());
                 car.updatePosition();
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
             // refreshes the screen with the new position
-            circuitPanel.repaint();
+            circuitPanel.updateCircuit(raceStartTime);
 
             if (!manual) {
-                // sends data to RL algoroithm
+                // sends data to RL algorithm
             }
 
             // checks for input
             if (manual) {
                 updateCar(listener.getDirections());
-                if (circuitPanel.isCarOutsideCircuit()) {
-                    isRunning = false;
+                if (!circuitPanel.isCarInsideImage()) {
+                    break;
                 }
             }
             else {
@@ -62,6 +64,13 @@ public class GameLoopWorker extends SwingWorker<Void, Void> {
             long elapsedTime = System.currentTimeMillis() - startTime;
             long remainingTimeToScreenUpdate = SCREEN_UPDATE - elapsedTime;
             Thread.sleep(remainingTimeToScreenUpdate);
+        }
+
+        if (circuitPanel.isLapCompleted()) {
+            System.out.println("LAP SUCCESSFULLY COMPLETED IN " + (System.currentTimeMillis() - raceStartTime) + "ms");
+        }
+        else {
+            System.out.println("LAP NOT COMPLETED");
         }
 
         System.exit(0);
