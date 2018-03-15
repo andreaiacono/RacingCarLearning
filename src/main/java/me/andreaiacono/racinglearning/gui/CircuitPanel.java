@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -39,6 +40,7 @@ public class CircuitPanel extends JPanel {
 
     private static final String CIRCUIT_FILENAME = "circuit.png";
     private static final String REWARD_CIRCUIT_FILENAME = "reward_circuit.png";
+    private boolean drawInfo;
     private final BufferedImage circuitImage;
     private final BufferedImage rewardCircuitImage;
     private final Car car;
@@ -49,8 +51,11 @@ public class CircuitPanel extends JPanel {
     private boolean isLapCompleted = false;
     private Stroke thickStroke = new BasicStroke(2.5f);
 
-    public CircuitPanel(Car car, DrivingKeyListener listener) throws Exception {
-        circuitImage = ImageIO.read(ClassLoader.getSystemResource(CIRCUIT_FILENAME));
+    public CircuitPanel(Car car, DrivingKeyListener listener, boolean drawInfo, boolean useBlackAndWhite) throws Exception {
+        this.drawInfo = drawInfo;
+        circuitImage = useBlackAndWhite
+                ? ImageIO.read(ClassLoader.getSystemResource(REWARD_CIRCUIT_FILENAME))
+                : ImageIO.read(ClassLoader.getSystemResource(CIRCUIT_FILENAME));
         rewardCircuitImage = ImageIO.read(ClassLoader.getSystemResource(REWARD_CIRCUIT_FILENAME));
 
         IMAGE_WIDTH = circuitImage.getWidth();
@@ -78,25 +83,24 @@ public class CircuitPanel extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // updates the checkpoints
         updateCheckpoints();
 
         // creates the image where to draw
         bufferedImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics2D imageGraphics = (Graphics2D) bufferedImage.getGraphics();
 
-        // draws the circuit
+        // draws the circuit and the car
         imageGraphics.drawImage(circuitImage, 0, 0, null);
-        imageGraphics.drawString(car.toString(), 10, 20);
-        imageGraphics.drawString("REWARD: " + getReward(), 10, 40);
-
-        // draws the car
         drawCar(imageGraphics);
 
-        // draws the time
-        String time = addZeroIfNeeded(this.time / 1000) + ":" + addZeroIfNeeded((this.time % 1000) / 10);
-        imageGraphics.drawString("Checks: " + checkSteps.toString(), 500, 20);
-        imageGraphics.drawString("TIME: " + time, 500, 40);
+        // draws info
+        if (!drawInfo) {
+            String time = addZeroIfNeeded(this.time / 1000) + ":" + addZeroIfNeeded((this.time % 1000) / 10);
+            imageGraphics.drawString(car.toString(), 10, 20);
+            imageGraphics.drawString("REWARD: " + getReward(), 10, 40);
+            imageGraphics.drawString("Checks: " + checkSteps.toString(), 500, 20);
+            imageGraphics.drawString("TIME: " + time, 500, 40);
+        }
 
         // draws the image to the panel
         g.drawImage(bufferedImage, 0, 0, null);
@@ -113,7 +117,7 @@ public class CircuitPanel extends JPanel {
 
     private void updateCheckpoints() {
         boolean areAllSet = true;
-        for (int i=0; i< checkPoints.length; i++) {
+        for (int i = 0; i < checkPoints.length; i++) {
             if (checkPoints[i].contains(car.getX(), car.getY())) {
                 checkSteps.set(i);
             }
@@ -164,12 +168,17 @@ public class CircuitPanel extends JPanel {
         imageGraphics.drawLine((int) (cx + cosAngleLeft), (int) (cy + sinAngleLeft), (int) (cx + cosAngleRight), (int) (cy + sinAngleRight));
     }
 
-    public Image getImage() {
-        return bufferedImage;
+    public byte[] getImage() throws IOException {
+        if (bufferedImage == null) {
+            return null;
+        }
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage, "BMP", baos);
+        return baos.toByteArray();
     }
 
     public boolean isCarInsideImage() {
-        return car.getX() >= 0 && car.getY() >=0 && car.getX() <= IMAGE_WIDTH && car.getY() <= IMAGE_HEIGHT;
+        return car.getX() >= 0 && car.getY() >= 0 && car.getX() <= IMAGE_WIDTH && car.getY() <= IMAGE_HEIGHT;
     }
 
     public boolean isCarOnTrack() {

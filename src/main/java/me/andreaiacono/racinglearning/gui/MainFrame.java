@@ -21,7 +21,7 @@ public class MainFrame extends JFrame {
         car = new Car(610, 320);
 
         // creates and adds the circuit to this window
-        CircuitPanel panel = new CircuitPanel(car, listener);
+        CircuitPanel panel = new CircuitPanel(car, listener, true, false);
         panel.setFocusable(true);
         add(panel);
 
