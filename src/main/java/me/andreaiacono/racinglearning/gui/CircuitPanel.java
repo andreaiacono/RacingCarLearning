@@ -1,7 +1,9 @@
 package me.andreaiacono.racinglearning.gui;
 
+import me.andreaiacono.racinglearning.core.GameParameters;
 import me.andreaiacono.racinglearning.misc.DrivingKeyListener;
 import me.andreaiacono.racinglearning.core.Car;
+import me.andreaiacono.racinglearning.misc.GameParameter;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -16,9 +18,10 @@ import java.util.Date;
 
 public class CircuitPanel extends JPanel {
 
-    private static final int CAR_LENGTH = 8;
-    private static final int CAR_WIDTH = 20;
+    private static final int CAR_LENGTH = 4;
+    private static final int CAR_WIDTH = 10;
     private static final Color CAR_COLOR = Color.RED;
+    private static final Font INFO_FONT = new Font("Arial", Font.PLAIN, 10);
 
     private int IMAGE_WIDTH;
     private int IMAGE_HEIGHT;
@@ -26,14 +29,14 @@ public class CircuitPanel extends JPanel {
     // the points of the tracks that car has to pass into in order
     // to consider a valid lap (otherwise it could get shortcuts)
     private Rectangle[] checkPoints = {
-            new Rectangle(625, 286, 16, 65),
-            new Rectangle(745, 215, 55, 8),
-            new Rectangle(525, 25, 27, 67),
-            new Rectangle(403, 204, 24, 70),
-            new Rectangle(193, 48, 20, 70),
-            new Rectangle(3, 224, 65, 20),
-            new Rectangle(87, 280, 20, 62),
-            new Rectangle(159, 129, 20, 60)
+            new Rectangle(312, 143, 8, 32),
+            new Rectangle(372, 108, 27, 4),
+            new Rectangle(262, 12, 13, 33),
+            new Rectangle(201, 102, 12, 35),
+            new Rectangle(96, 24, 10, 35),
+            new Rectangle(1, 112, 32, 10),
+            new Rectangle(43, 140, 10, 31),
+            new Rectangle(79, 64, 10, 30)
     };
 
     private BitSet checkSteps = new BitSet(checkPoints.length);
@@ -51,9 +54,9 @@ public class CircuitPanel extends JPanel {
     private boolean isLapCompleted = false;
     private Stroke thickStroke = new BasicStroke(2.5f);
 
-    public CircuitPanel(Car car, DrivingKeyListener listener, boolean drawInfo, boolean useBlackAndWhite) throws Exception {
-        this.drawInfo = drawInfo;
-        circuitImage = useBlackAndWhite
+    public CircuitPanel(Car car, DrivingKeyListener listener, GameParameters gameParameters) throws Exception {
+        this.drawInfo = gameParameters.getBool(GameParameter.DRAW_INFO);
+        circuitImage = drawInfo
                 ? ImageIO.read(ClassLoader.getSystemResource(REWARD_CIRCUIT_FILENAME))
                 : ImageIO.read(ClassLoader.getSystemResource(CIRCUIT_FILENAME));
         rewardCircuitImage = ImageIO.read(ClassLoader.getSystemResource(REWARD_CIRCUIT_FILENAME));
@@ -75,9 +78,9 @@ public class CircuitPanel extends JPanel {
      */
     public int getReward() {
         if (isCarInsideImage()) {
-            return isCarOnTrack() ? 10 : -10;
+            return isCarOnTrack() ? 100 : -100;
         }
-        return -100;
+        return -1000;
     }
 
     public void paintComponent(Graphics g) {
@@ -96,10 +99,11 @@ public class CircuitPanel extends JPanel {
         // draws info
         if (!drawInfo) {
             String time = addZeroIfNeeded(this.time / 1000) + ":" + addZeroIfNeeded((this.time % 1000) / 10);
-            imageGraphics.drawString(car.toString(), 10, 20);
-            imageGraphics.drawString("REWARD: " + getReward(), 10, 40);
-            imageGraphics.drawString("Checks: " + checkSteps.toString(), 500, 20);
-            imageGraphics.drawString("TIME: " + time, 500, 40);
+            imageGraphics.setFont(INFO_FONT);
+            imageGraphics.drawString(car.toString(), 10, 10);
+            imageGraphics.drawString("REWARD: " + getReward(), 10, 20);
+            imageGraphics.drawString("Checks: " + checkSteps.toString(), 230, 10);
+            imageGraphics.drawString("TIME: " + time, 230, 20);
         }
 
         // draws the image to the panel
@@ -168,7 +172,7 @@ public class CircuitPanel extends JPanel {
         imageGraphics.drawLine((int) (cx + cosAngleLeft), (int) (cy + sinAngleLeft), (int) (cx + cosAngleRight), (int) (cy + sinAngleRight));
     }
 
-    public byte[] getImage() throws IOException {
+    public byte[] getCurrentFrame() throws IOException {
         if (bufferedImage == null) {
             return null;
         }
