@@ -16,7 +16,7 @@ public class MainFrame extends JFrame {
     public MainFrame(String[] args) throws Exception {
 
         super("Racing Car Learning");
-        setSize(400, 200);
+        setSize(400, 220);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         // creates the car

@@ -1,13 +1,12 @@
 package me.andreaiacono.racinglearning.core;
 
 
-import me.andreaiacono.racinglearning.misc.Directions;
 import me.andreaiacono.racinglearning.misc.Vector2D;
 
 public class Car {
 
     private static final double AUTO_SLOW_DOWN = 0.2;
-    private static final int MAX_SPEED = 8;
+    private static final int MAX_SPEED = 5;
     private static final int MAX_STEERING_ANGLE = 45;
     private boolean isOnTrack;
 
@@ -58,19 +57,17 @@ public class Car {
         return velocity.direction;
     }
 
-    public void applyDirections(Directions directions) {
+    public void applyDirections(Command command) {
 
-        if (directions.upPressed) {
+        if (command.getFrontalValue() == 1) {
             accelerate(0.4);
         }
-        if (directions.downPressed) {
+        else if (command.getFrontalValue() == -1) {
             brake(0.8);
         }
-        if (directions.leftPressed) {
-            steer(-8);
-        }
-        if (directions.rightPressed) {
-            steer(8);
+
+        if (command.getLateralValue() != 0) {
+            steer(8 * command.getLateralValue());
         }
     }
 
@@ -139,11 +136,13 @@ public class Car {
         return sb.toString();
     }
 
-    static class Velocity {
+    public static class Velocity {
 
         // the direction in degrees [0,360)
-        double direction;
-        double speed;
+        public double direction;
+
+        // the speed [0, 8]
+        public double speed;
 
         public Velocity(double speed, double direction) {
             this.speed = speed;

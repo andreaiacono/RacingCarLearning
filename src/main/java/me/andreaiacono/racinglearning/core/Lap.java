@@ -12,4 +12,8 @@ public class Lap {
         this.circuit = circuit;
     }
 
+    public void updateCarPosition() {
+        car.setIsOnTrack(circuit.isCarOnTrack());
+        car.updatePosition();
+    }
 }

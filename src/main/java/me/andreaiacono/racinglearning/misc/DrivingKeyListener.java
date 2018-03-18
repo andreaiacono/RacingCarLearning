@@ -1,5 +1,7 @@
 package me.andreaiacono.racinglearning.misc;
 
+import me.andreaiacono.racinglearning.core.Command;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -40,7 +42,14 @@ public class DrivingKeyListener implements KeyListener {
         System.out.println("key typed: " + e);
     }
 
-    public Directions getDirections() {
-        return directions;
+    public Command getCommand() {
+        int frontal = directions.upPressed ? 1 : directions.downPressed ? -1 : 0;
+        int lateral = directions.rightPressed ? 1 : directions.leftPressed ? -1 : 0;
+        return Command.getCommand(frontal, lateral);
     }
+
+    public class Directions {
+        public boolean upPressed, downPressed, leftPressed, rightPressed;
+    }
+
 }

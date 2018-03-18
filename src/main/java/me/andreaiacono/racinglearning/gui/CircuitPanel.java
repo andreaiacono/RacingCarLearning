@@ -30,7 +30,7 @@ public class CircuitPanel extends JPanel {
     // to consider a valid lap (otherwise it could get shortcuts)
     private Rectangle[] checkPoints = {
             new Rectangle(312, 143, 8, 32),
-            new Rectangle(372, 108, 27, 4),
+            new Rectangle(372, 108, 27, 10),
             new Rectangle(262, 12, 13, 33),
             new Rectangle(201, 102, 12, 35),
             new Rectangle(96, 24, 10, 35),
@@ -72,15 +72,31 @@ public class CircuitPanel extends JPanel {
     /**
      * Computes the rewards associated to the position of the car in the circuit.
      * If the car is on the track, the reward will be high; if the car is outside the
-     * track, the reward will be low
+     * track, the reward will be low. Also, the more checkpoints passed, the better.
      *
-     * @return 10 if on track and -10 if not on track
+     * @return the reward for the current position of the car (based on the path it took to arrive there)
      */
     public int getReward() {
-        if (isCarInsideImage()) {
-            return isCarOnTrack() ? 100 : -100;
+
+        if (!isCarInsideScreen()) {
+            return -1000;
         }
-        return -1000;
+
+        // the faster the car goes, the better
+        int reward = (int) car.getVelocity().speed * 10;
+
+        // the more checkpoints passed, the more reward gained
+        reward += checkSteps.cardinality() * 50;
+
+        // being on track is better than being off track
+        reward += isCarOnTrack() ? 100 : -100;
+
+        // if the lap was completed, super reward!
+        if (isLapCompleted) {
+            reward += 10000;
+        }
+
+        return reward;
     }
 
     public void paintComponent(Graphics g) {
@@ -181,12 +197,12 @@ public class CircuitPanel extends JPanel {
         return baos.toByteArray();
     }
 
-    public boolean isCarInsideImage() {
+    public boolean isCarInsideScreen() {
         return car.getX() >= 0 && car.getY() >= 0 && car.getX() <= IMAGE_WIDTH && car.getY() <= IMAGE_HEIGHT;
     }
 
     public boolean isCarOnTrack() {
-        if (!isCarInsideImage()) {
+        if (!isCarInsideScreen()) {
             return false;
         }
         int color = rewardCircuitImage.getRGB(car.getX(), car.getY());
