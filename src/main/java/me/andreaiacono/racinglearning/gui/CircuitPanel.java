@@ -1,5 +1,6 @@
 package me.andreaiacono.racinglearning.gui;
 
+import com.sun.tools.javac.util.Pair;
 import me.andreaiacono.racinglearning.core.GameParameters;
 import me.andreaiacono.racinglearning.misc.DrivingKeyListener;
 import me.andreaiacono.racinglearning.core.Car;
@@ -22,6 +23,8 @@ public class CircuitPanel extends JPanel {
     private static final int CAR_WIDTH = 10;
     private static final Color CAR_COLOR = Color.RED;
     private static final Font INFO_FONT = new Font("Arial", Font.PLAIN, 10);
+    public static final Pair<Integer, Integer> CAR_STARTING_POSITION = new Pair(305, 160);
+
 
     private int IMAGE_WIDTH;
     private int IMAGE_HEIGHT;
@@ -188,12 +191,16 @@ public class CircuitPanel extends JPanel {
         imageGraphics.drawLine((int) (cx + cosAngleLeft), (int) (cy + sinAngleLeft), (int) (cx + cosAngleRight), (int) (cy + sinAngleRight));
     }
 
-    public byte[] getCurrentFrame() throws IOException {
+    public byte[] getCurrentFrame() {
         if (bufferedImage == null) {
             return null;
         }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(bufferedImage, "BMP", baos);
+        try {
+            ImageIO.write(bufferedImage, "BMP", baos);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return baos.toByteArray();
     }
 
@@ -213,8 +220,15 @@ public class CircuitPanel extends JPanel {
         return isLapCompleted;
     }
 
+    public void updateCircuit() {
+        updateCircuit(-1);
+    }
     public void updateCircuit(long raceStartTime) {
         this.time = System.currentTimeMillis() - raceStartTime;
         repaint();
+    }
+
+    public void reset() {
+
     }
 }

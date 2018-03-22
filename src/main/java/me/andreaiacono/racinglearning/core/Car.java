@@ -3,6 +3,8 @@ package me.andreaiacono.racinglearning.core;
 
 import me.andreaiacono.racinglearning.misc.Vector2D;
 
+import static me.andreaiacono.racinglearning.gui.CircuitPanel.CAR_STARTING_POSITION;
+
 public class Car {
 
     private static final double AUTO_SLOW_DOWN = 0.2;
@@ -14,7 +16,7 @@ public class Car {
 
     // the velocity of the car is a 2D vector formed by the speed and the direction
     // the car is going (which differs from the steering angle)
-    private Velocity velocity = new Velocity(0, 0);
+    private Velocity velocity;
 
     // the steering angle
     private double steeringAngle = 0;
@@ -23,9 +25,8 @@ public class Car {
     // the position of the car (as of the middle point)
     private double x, y;
 
-    public Car(int x, int y) {
-        this.x = x;
-        this.y = y;
+    public Car() {
+        reset();
     }
 
     public void accelerate(double qty) {
@@ -116,6 +117,14 @@ public class Car {
         }
 
         adjustmentAngle -= adjustmentAngle / 10;
+    }
+
+    public void reset() {
+        x = CAR_STARTING_POSITION.fst;
+        y = CAR_STARTING_POSITION.snd;
+        steeringAngle = 0;
+        adjustmentAngle = 0;
+        velocity = new Velocity(0, 0);
     }
 
     public Velocity getVelocity() {

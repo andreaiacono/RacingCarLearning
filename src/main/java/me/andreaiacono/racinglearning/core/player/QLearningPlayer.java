@@ -1,69 +1,77 @@
 package me.andreaiacono.racinglearning.core.player;
 
-import me.andreaiacono.racinglearning.core.Car;
-import me.andreaiacono.racinglearning.core.Command;
-import me.andreaiacono.racinglearning.core.Lap;
-import me.andreaiacono.racinglearning.gui.CircuitPanel;
-
-import java.util.Random;
+import me.andreaiacono.racinglearning.core.Game;
+import me.andreaiacono.racinglearning.rl.RacingMDP;
+import me.andreaiacono.racinglearning.rl.ScreenFrameState;
+import org.deeplearning4j.rl4j.learning.HistoryProcessor;
+import org.deeplearning4j.rl4j.learning.sync.qlearning.QLearning;
+import org.deeplearning4j.rl4j.learning.sync.qlearning.discrete.QLearningDiscreteConv;
+import org.deeplearning4j.rl4j.network.dqn.DQNFactoryStdConv;
+import org.deeplearning4j.rl4j.util.DataManager;
 
 public class QLearningPlayer {
 
-    private final double alpha = 0.1; // Learning rate
-    private final double gamma = 0.9; // Eagerness - 0 looks in the near future, 1 looks in the distant future
+    private final Game game;
 
-    private byte[] oldFrame;
+    public static HistoryProcessor.Configuration RACING_HP =
+            new HistoryProcessor.Configuration(
+                    4,       //History length
+                    84,      //resize width
+                    110,     //resize height
+                    84,      //crop width
+                    84,      //crop height
+                    0,       //cropping x offset
+                    0,       //cropping y offset
+                    4        //skip mod (one frame is picked every x
+            );
 
-    private final Lap lap;
+    public static QLearning.QLConfiguration RACING_QL =
+            new QLearning.QLConfiguration(
+                    123,      //Random seed
+                    10000,    //Max step By epoch
+                    8000000,  //Max step
+                    1000000,  //Max size of experience replay
+                    32,       //size of batches
+                    10000,    //target update (hard)
+                    500,      //num step noop warmup
+                    0.1,      //reward scaling
+                    0.99,     //gamma
+                    100.0,    //td-error clipping
+                    0.1f,     //min epsilon
+                    100000,   //num step for eps greedy anneal
+                    true      //double-dqn
+            );
 
-    public QLearningPlayer(Lap lap) {
-        this.lap = lap;
+    public static DQNFactoryStdConv.Configuration RACING_NET_CONFIG =
+            new DQNFactoryStdConv.Configuration(
+                    0.00025, //learning rate
+                    0.000,   //l2 regularization
+                    null, null
+            );
+
+
+    public QLearningPlayer(Game game) {
+        this.game = game;
     }
 
-    public void race(Lap lap) throws Exception {
+    public void race() throws Exception {
 
-        long raceStartTime = System.currentTimeMillis();
-        CircuitPanel circuit = lap.circuit;
-        Car car = lap.car;
+        DataManager manager = new DataManager(true);
 
-        Random rand = new Random();
+        //setup the emulation environment through ALE, you will need a ROM file
+        RacingMDP mdp = new RacingMDP(game);
 
-        for (int i = 0; i < 1000; i++) { // Train cycles
+        //setup the training
+        QLearningDiscreteConv<ScreenFrameState> dql = new QLearningDiscreteConv(mdp, RACING_NET_CONFIG, RACING_HP, RACING_QL, manager);
 
-            while (!circuit.isLapCompleted()) {
+        //start the training
+        dql.train();
 
-                // computes image to be sent to the RL algorithm
-                byte[] currentFrame = circuit.getCurrentFrame();
-                byte[] delta = computeDelta(currentFrame, oldFrame);
-                oldFrame = currentFrame;
+        //save the model at the end
+        dql.getPolicy().save("racing-dql.model");
 
-//                // Q(state,action)= Q(state,action) + alpha * (R(state,action) + gamma * Max(next state, all actions) - Q(state,action))
-//                double q = Q[crtState][nextState];
-//                double maxQ = maxQ(nextState);
-//                int r = reward;
-//
-//                double value = (1-alpha) * q  + alpha * (r + gamma * maxQ);
-//                Q[crtState][nextState] = value;
-
-                // output of the QLearning algo
-                Command command = null; // getOutput();
-
-                // apply the output to the car
-                car.applyDirections(command);
-
-                // updates the position of the car
-                lap.updateCarPosition();
-
-                // refreshes the screen with the new position
-                circuit.updateCircuit(raceStartTime);
-
-                // computes the reward of the action
-                int reward = circuit.getReward();
-
-
-
-            }
-        }
+        //close the ALE env
+        mdp.close();
     }
 
     /**

@@ -2,7 +2,7 @@ package me.andreaiacono.racinglearning.gui;
 
 import me.andreaiacono.racinglearning.core.Car;
 import me.andreaiacono.racinglearning.core.GameParameters;
-import me.andreaiacono.racinglearning.core.Lap;
+import me.andreaiacono.racinglearning.core.Game;
 import me.andreaiacono.racinglearning.misc.DrivingKeyListener;
 
 import javax.swing.*;
@@ -10,7 +10,7 @@ import javax.swing.*;
 public class MainFrame extends JFrame {
 
     private final Car car;
-    private final GameLoopWorker gameLoopWorker;
+    private final GameWorker gameWorker;
     private final DrivingKeyListener listener = new DrivingKeyListener();
 
     public MainFrame(String[] args) throws Exception {
@@ -20,19 +20,19 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         // creates the car
-        car = new Car(305, 160);
+        car = new Car();
 
         // creates and adds the circuit to this window
         GameParameters params = new GameParameters(args);
         CircuitPanel panel = new CircuitPanel(car, listener, params);
-        Lap lap = new Lap(car, panel);
+        Game game = new Game(car, panel);
 
         panel.setFocusable(true);
         add(panel);
 
         // starts the game
-        gameLoopWorker = new GameLoopWorker(lap, params, listener);
-        gameLoopWorker.execute();
+        gameWorker = new GameWorker(game, params, listener);
+        gameWorker.execute();
 
         setVisible(true);
     }

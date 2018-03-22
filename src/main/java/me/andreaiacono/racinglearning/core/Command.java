@@ -3,6 +3,10 @@ package me.andreaiacono.racinglearning.core;
 
 import java.util.Arrays;
 
+/**
+ * The car can move in two directions: frontal and lateral. All the combinations of the two are all
+ * the possible moves of the car. Each of the two directions can have three values [-1, 0 1].
+ */
 public enum Command {
     ACCELERATE(1, 0),
     BRAKE(-1, 0),

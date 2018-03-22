@@ -1,7 +1,7 @@
 package me.andreaiacono.racinglearning.core.player;
 
 import me.andreaiacono.racinglearning.core.Car;
-import me.andreaiacono.racinglearning.core.Lap;
+import me.andreaiacono.racinglearning.core.Game;
 import me.andreaiacono.racinglearning.gui.CircuitPanel;
 import me.andreaiacono.racinglearning.misc.DrivingKeyListener;
 
@@ -14,18 +14,19 @@ public class HumanPlayer {
     private final static long SCREEN_UPDATE = ONE_SECOND_IN_MILLIS / GAME_FREQUENCY;
 
 
-    private final Lap lap;
+    private final Game game;
     private DrivingKeyListener listener;
 
-    public HumanPlayer(Lap lap, DrivingKeyListener listener) {
-        this.lap = lap;
+    public HumanPlayer(Game game, DrivingKeyListener listener) {
+        this.game = game;
         this.listener = listener;
     }
 
+    // the game loop
     public void race(long raceStartTime) throws Exception {
 
-        CircuitPanel circuit = lap.circuit;
-        Car car = lap.car;
+        CircuitPanel circuit = game.circuit;
+        Car car = game.car;
 
         while (!circuit.isLapCompleted()) {
 
