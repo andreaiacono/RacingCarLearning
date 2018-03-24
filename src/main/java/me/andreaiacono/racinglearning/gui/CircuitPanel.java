@@ -1,6 +1,5 @@
 package me.andreaiacono.racinglearning.gui;
 
-import com.sun.tools.javac.util.Pair;
 import me.andreaiacono.racinglearning.core.GameParameters;
 import me.andreaiacono.racinglearning.misc.DrivingKeyListener;
 import me.andreaiacono.racinglearning.core.Car;
@@ -23,7 +22,7 @@ public class CircuitPanel extends JPanel {
     private static final int CAR_WIDTH = 10;
     private static final Color CAR_COLOR = Color.RED;
     private static final Font INFO_FONT = new Font("Arial", Font.PLAIN, 10);
-    public static final Pair<Integer, Integer> CAR_STARTING_POSITION = new Pair(305, 160);
+    public static final Point CAR_STARTING_POSITION = new Point(305, 160);
 
 
     private int IMAGE_WIDTH;

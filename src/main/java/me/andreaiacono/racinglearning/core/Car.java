@@ -120,8 +120,8 @@ public class Car {
     }
 
     public void reset() {
-        x = CAR_STARTING_POSITION.fst;
-        y = CAR_STARTING_POSITION.snd;
+        x = CAR_STARTING_POSITION.x;
+        y = CAR_STARTING_POSITION.y;
         steeringAngle = 0;
         adjustmentAngle = 0;
         velocity = new Velocity(0, 0);

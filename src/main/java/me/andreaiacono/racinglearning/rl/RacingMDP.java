@@ -10,13 +10,19 @@ import org.deeplearning4j.rl4j.space.ObservationSpace;
 
 public class RacingMDP implements MDP<ScreenFrameState, Integer, CarActionSpace> {
 
-    private ObservationSpace<ScreenFrameState> observationSpace = new ArrayObservationSpace(new int[] {1});
+    private final ObservationSpace<ScreenFrameState> observationSpace;
     private CarActionSpace carActionSpace = new CarActionSpace();
     private Game game;
     private byte[] screenBuffer;
 
     public RacingMDP(Game game) {
         this.game = game;
+        int[] shape = {
+                game.circuit.getHeight(),
+                game.circuit.getWidth(),
+                3
+        };
+        observationSpace = new ArrayObservationSpace<>(shape);
     }
 
     @Override
@@ -44,6 +50,7 @@ public class RacingMDP implements MDP<ScreenFrameState, Integer, CarActionSpace>
     public StepReply<ScreenFrameState> step(Integer action) {
         Command command = CommandsTranslator.getCommandFromInteger(action);
         int reward = game.move(command);
+        System.out.println("Executed " + command + ": " + reward);
         return new StepReply(new ScreenFrameState(screenBuffer), reward, game.isOver(), null);
     }
 
