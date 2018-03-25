@@ -14,7 +14,10 @@ public class GameParameters {
             addParam(GameParameter.IS_HUMAN, args[0].equalsIgnoreCase("human"));
         }
         if (args.length > 1) {
-            addParam(GameParameter.DRAW_INFO, args[0].equalsIgnoreCase("draw"));
+            addParam(GameParameter.DRAW_INFO, args[1].equalsIgnoreCase("draw"));
+        }
+        if (args.length > 2) {
+            addParam(GameParameter.USE_BLACK_AND_WHITE, args[2].equalsIgnoreCase("b&w"));
         }
     }
 

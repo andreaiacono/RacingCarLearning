@@ -11,7 +11,7 @@ public class QLearningPlayer {
         this.game = game;
     }
 
-    public void race() throws Exception {
+    public void race() {
         new QLearning(game).startLearning();
     }
 }

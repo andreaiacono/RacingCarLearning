@@ -2,19 +2,16 @@ package me.andreaiacono.racinglearning.rl;
 
 import me.andreaiacono.racinglearning.core.Game;
 import org.deeplearning4j.rl4j.learning.HistoryProcessor;
-import org.deeplearning4j.rl4j.learning.sync.qlearning.discrete.QLearningDiscrete;
 import org.deeplearning4j.rl4j.learning.sync.qlearning.discrete.QLearningDiscreteConv;
-import org.deeplearning4j.rl4j.learning.sync.qlearning.discrete.QLearningDiscreteDense;
 import org.deeplearning4j.rl4j.network.dqn.DQNFactoryStdConv;
-import org.deeplearning4j.rl4j.network.dqn.DQNFactoryStdDense;
 import org.deeplearning4j.rl4j.util.DataManager;
+import org.deeplearning4j.rl4j.learning.sync.qlearning.QLearning.QLConfiguration;
 
 public class QLearning {
 
     private final Game game;
 
-    public static HistoryProcessor.Configuration RACING_HP =
-            new HistoryProcessor.Configuration(
+    public static HistoryProcessor.Configuration RACING_HP = new HistoryProcessor.Configuration(
                     4,       //History length
                     100,      //resize width
                     25,     //resize height
@@ -25,8 +22,7 @@ public class QLearning {
                     4        //skip mod (one frame is picked every x
             );
 
-    public static org.deeplearning4j.rl4j.learning.sync.qlearning.QLearning.QLConfiguration RACING_QL =
-            new org.deeplearning4j.rl4j.learning.sync.qlearning.QLearning.QLConfiguration(
+    public static QLConfiguration RACING_QL = new QLConfiguration(
                     123,      //Random seed
                     10000,    //Max step By epoch
                     8000000,  //Max step
@@ -42,11 +38,11 @@ public class QLearning {
                     true      //double-dqn
             );
 
-    public static DQNFactoryStdConv.Configuration RACING_NET_CONFIG =
-            new DQNFactoryStdConv.Configuration(
-                    0.00025, //learning rate
-                    0.000,   //l2 regularization
-                    null, null
+    public static DQNFactoryStdConv.Configuration RACING_NET_CONFIG = new DQNFactoryStdConv.Configuration(
+                    0.00025,    //learning rate
+                    0.000,              //l2 regularization
+                    null,
+                    null
             );
 
 

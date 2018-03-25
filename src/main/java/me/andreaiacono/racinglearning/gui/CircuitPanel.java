@@ -9,6 +9,8 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.awt.image.WritableRaster;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -58,10 +60,12 @@ public class CircuitPanel extends JPanel {
 
     public CircuitPanel(Car car, DrivingKeyListener listener, GameParameters gameParameters) throws Exception {
         this.drawInfo = gameParameters.getBool(GameParameter.DRAW_INFO);
-        circuitImage = drawInfo
+        circuitImage = gameParameters.getBool(GameParameter.USE_BLACK_AND_WHITE)
                 ? ImageIO.read(ClassLoader.getSystemResource(REWARD_CIRCUIT_FILENAME))
                 : ImageIO.read(ClassLoader.getSystemResource(CIRCUIT_FILENAME));
         rewardCircuitImage = ImageIO.read(ClassLoader.getSystemResource(REWARD_CIRCUIT_FILENAME));
+
+        bufferedImage = new BufferedImage(circuitImage.getWidth(), circuitImage.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
 
         IMAGE_WIDTH = circuitImage.getWidth();
         IMAGE_HEIGHT = circuitImage.getHeight();
@@ -107,7 +111,6 @@ public class CircuitPanel extends JPanel {
         updateCheckpoints();
 
         // creates the image where to draw
-        bufferedImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics2D imageGraphics = (Graphics2D) bufferedImage.getGraphics();
 
         // draws the circuit and the car
@@ -115,7 +118,7 @@ public class CircuitPanel extends JPanel {
         drawCar(imageGraphics);
 
         // draws info
-        if (!drawInfo) {
+        if (drawInfo) {
             String time = addZeroIfNeeded(this.time / 1000) + ":" + addZeroIfNeeded((this.time % 1000) / 10);
             imageGraphics.setFont(INFO_FONT);
             imageGraphics.drawString(car.toString(), 10, 10);
@@ -191,16 +194,10 @@ public class CircuitPanel extends JPanel {
     }
 
     public byte[] getCurrentFrame() {
-        if (bufferedImage == null) {
-            return null;
-        }
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try {
-            ImageIO.write(bufferedImage, "BMP", baos);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return baos.toByteArray();
+        WritableRaster raster = bufferedImage.getRaster();
+        DataBufferByte buffer = (DataBufferByte) raster.getDataBuffer();
+        System.out.println("BUFFER SIZE = " + buffer.getData().length);
+        return buffer.getData();
     }
 
     public boolean isCarInsideScreen() {
@@ -222,6 +219,7 @@ public class CircuitPanel extends JPanel {
     public void updateCircuit() {
         updateCircuit(-1);
     }
+
     public void updateCircuit(long raceStartTime) {
         this.time = System.currentTimeMillis() - raceStartTime;
         repaint();
@@ -229,5 +227,13 @@ public class CircuitPanel extends JPanel {
 
     public void reset() {
 
+    }
+
+    public int getScreenHeight() {
+        return bufferedImage.getHeight();
+    }
+
+    public int getScreenWidth() {
+        return bufferedImage.getWidth();
     }
 }

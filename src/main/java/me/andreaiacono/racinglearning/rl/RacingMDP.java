@@ -18,8 +18,8 @@ public class RacingMDP implements MDP<ScreenFrameState, Integer, CarActionSpace>
     public RacingMDP(Game game) {
         this.game = game;
         int[] shape = {
-                game.circuit.getHeight(),
-                game.circuit.getWidth(),
+                game.circuit.getScreenHeight(),
+                game.circuit.getScreenWidth(),
                 3
         };
         observationSpace = new ArrayObservationSpace<>(shape);

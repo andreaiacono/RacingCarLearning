@@ -22,11 +22,12 @@ public class Game {
     }
 
     public void reset() {
+        car.reset();
         circuit.reset();
     }
 
     public boolean isOver() {
-        return circuit.isLapCompleted();
+        return !circuit.isCarInsideScreen() || circuit.isLapCompleted();
     }
 
     public int move(Command command) {
