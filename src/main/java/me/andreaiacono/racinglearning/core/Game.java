@@ -27,7 +27,7 @@ public class Game {
     }
 
     public boolean isOver() {
-        return !circuit.isCarInsideScreen() || circuit.isLapCompleted();
+        return !circuit.isCarInsideScreen() || circuit.isLapCompleted() || circuit.isTimeOver();
     }
 
     public int move(Command command) {

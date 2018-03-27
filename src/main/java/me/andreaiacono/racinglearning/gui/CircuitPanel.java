@@ -25,6 +25,7 @@ public class CircuitPanel extends JPanel {
     private static final Color CAR_COLOR = Color.RED;
     private static final Font INFO_FONT = new Font("Arial", Font.PLAIN, 10);
     public static final Point CAR_STARTING_POSITION = new Point(305, 160);
+    private static final long MAX_TIME = 30;  // in seconds
 
 
     private int IMAGE_WIDTH;
@@ -57,6 +58,7 @@ public class CircuitPanel extends JPanel {
     private long time;
     private boolean isLapCompleted = false;
     private Stroke thickStroke = new BasicStroke(2.5f);
+    private long startTime;
 
     public CircuitPanel(Car car, DrivingKeyListener listener, GameParameters gameParameters) throws Exception {
         this.drawInfo = gameParameters.getBool(GameParameter.DRAW_INFO);
@@ -71,6 +73,7 @@ public class CircuitPanel extends JPanel {
         IMAGE_HEIGHT = circuitImage.getHeight();
 
         this.car = car;
+        startTime = System.currentTimeMillis();
         setFocusable(true);
         addKeyListener(listener);
     }
@@ -85,24 +88,53 @@ public class CircuitPanel extends JPanel {
     public int getReward() {
 
         if (!isCarInsideScreen()) {
-            return -1000;
+            return -100000;
         }
 
         // the faster the car goes, the better
         int reward = (int) car.getVelocity().speed * 10;
 
-        // the more checkpoints passed, the more reward gained
-        reward += checkSteps.cardinality() * 50;
+        // the more checkpoints passed in order, the more reward gained
+        reward += getCheckPointsReward();
 
         // being on track is better than being off track
-        reward += isCarOnTrack() ? 100 : -100;
+        reward += isCarOnTrack() ? 1000 : -1000;
+
+//        // the more time passes, the worse is  /// MISLEADING!
+//        long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
+//        reward -= 20 * elapsedTime;
 
         // if the lap was completed, super reward!
         if (isLapCompleted) {
-            reward += 10000;
+            reward += 100000;
         }
 
         return reward;
+    }
+
+    // the checkpoints give a positive reward only if they're passed in sequence
+    private int getCheckPointsReward() {
+
+        // not yet started, neutral reward
+        if (checkSteps.length() == 0) {
+            return 0;
+        }
+
+        int firstNotPassedCheckPoint = -1;
+
+        for (int i = 0; i < checkSteps.length(); i++) {
+            if (!checkSteps.get(i) && firstNotPassedCheckPoint == -1) {
+                firstNotPassedCheckPoint = i;
+            }
+        }
+
+        // if a checkpoint was missed
+        if (firstNotPassedCheckPoint != -1 && checkSteps.cardinality() != firstNotPassedCheckPoint - 1) {
+            return -5000;
+        }
+
+        // returns a progressive positive reward
+        return checkSteps.cardinality() * 50;
     }
 
     public void paintComponent(Graphics g) {
@@ -201,7 +233,7 @@ public class CircuitPanel extends JPanel {
     }
 
     public boolean isCarInsideScreen() {
-        return car.getX() >= 0 && car.getY() >= 0 && car.getX() <= IMAGE_WIDTH && car.getY() <= IMAGE_HEIGHT;
+        return car.getX() >= 0 && car.getY() >= 0 && car.getX() < IMAGE_WIDTH && car.getY() < IMAGE_HEIGHT;
     }
 
     public boolean isCarOnTrack() {
@@ -226,7 +258,8 @@ public class CircuitPanel extends JPanel {
     }
 
     public void reset() {
-
+        startTime = System.currentTimeMillis();
+        checkSteps.clear();
     }
 
     public int getScreenHeight() {
@@ -235,5 +268,10 @@ public class CircuitPanel extends JPanel {
 
     public int getScreenWidth() {
         return bufferedImage.getWidth();
+    }
+
+    public boolean isTimeOver() {
+        long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
+        return elapsedTime > MAX_TIME;
     }
 }

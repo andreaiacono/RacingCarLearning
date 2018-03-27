@@ -13,17 +13,17 @@ public class QLearning {
 
     public static HistoryProcessor.Configuration RACING_HP = new HistoryProcessor.Configuration(
                     4,       //History length
-                    100,      //resize width
-                    25,     //resize height
-                    84,      //crop width
-                    84,      //crop height
+                    400,     //resize width
+                    192,     //resize height
+                    50,      //crop width
+                    50,      //crop height
                     0,       //cropping x offset
                     0,       //cropping y offset
                     4        //skip mod (one frame is picked every x
             );
 
     public static QLConfiguration RACING_QL = new QLConfiguration(
-                    123,      //Random seed
+                    12345,      //Random seed
                     10000,    //Max step By epoch
                     8000000,  //Max step
                     1000000,  //Max size of experience replay
@@ -55,15 +55,12 @@ public class QLearning {
         try {
 
             DataManager manager = new DataManager(true);
-            System.out.println("started data manager");
 
             //setup the emulation environment through ALE, you will need a ROM file
             RacingMDP mdp = new RacingMDP(game);
-            System.out.println("started mdp");
 
             //setup the training
             QLearningDiscreteConv<ScreenFrameState> dql = new QLearningDiscreteConv(mdp, RACING_NET_CONFIG, RACING_HP, RACING_QL, manager);
-            System.out.println("started dql");
 
             //start the training
             dql.train();
