@@ -1,14 +1,12 @@
 package me.andreaiacono.racinglearning.core;
 
-
-import me.andreaiacono.racinglearning.misc.Vector2D;
-
+import static me.andreaiacono.racinglearning.gui.CircuitPanel.CAR_STARTING_ANGLE;
 import static me.andreaiacono.racinglearning.gui.CircuitPanel.CAR_STARTING_POSITION;
 
 public class Car {
 
     private static final double AUTO_SLOW_DOWN = 0.2;
-    private static final int MAX_SPEED = 5;
+    private static final int MAX_SPEED = 6;
     private static final int MAX_STEERING_ANGLE = 45;
     private boolean isOnTrack;
 
@@ -122,9 +120,8 @@ public class Car {
     public void reset() {
         x = CAR_STARTING_POSITION.x;
         y = CAR_STARTING_POSITION.y;
-        steeringAngle = 0;
         adjustmentAngle = 0;
-        velocity = new Velocity(0, 0);
+        velocity = new Velocity(0, CAR_STARTING_ANGLE);
     }
 
     public Velocity getVelocity() {

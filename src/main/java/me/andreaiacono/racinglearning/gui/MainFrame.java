@@ -16,7 +16,6 @@ public class MainFrame extends JFrame {
     public MainFrame(String[] args) throws Exception {
 
         super("Racing Car Learning");
-        setSize(400, 220);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         // creates the car
@@ -29,6 +28,7 @@ public class MainFrame extends JFrame {
 
         panel.setFocusable(true);
         add(panel);
+        setSize(panel.getScreenWidth(), panel.getScreenHeight()+20);
 
         // starts the game
         gameWorker = new GameWorker(game, params, listener);

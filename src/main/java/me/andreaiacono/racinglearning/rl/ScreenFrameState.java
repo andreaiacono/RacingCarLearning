@@ -12,6 +12,7 @@ public class ScreenFrameState implements Encodable {
     public ScreenFrameState(byte[] screen) {
         array = new double[screen.length];
         for (int i = 0; i < screen.length; i++) {
+            // transforms the RGB byte value [0,255] into a double [0,1]
             array[i] = (screen[i] & 0xFF) / 255.0;
         }
     }

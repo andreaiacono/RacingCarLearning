@@ -50,7 +50,7 @@ public class RacingMDP implements MDP<ScreenFrameState, Integer, CarActionSpace>
     public StepReply<ScreenFrameState> step(Integer action) {
         Command command = CommandsTranslator.getCommandFromInteger(action);
         int reward = game.move(command);
-        System.out.print("\rExecuted " + command + ": " + reward);
+        System.out.print("\rExecuted " + command + ": " + reward + " - ");
         return new StepReply(new ScreenFrameState(screenBuffer), reward, game.isOver(), null);
     }
 

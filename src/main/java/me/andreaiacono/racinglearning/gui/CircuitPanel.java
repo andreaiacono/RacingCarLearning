@@ -11,22 +11,18 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.BitSet;
-import java.util.Date;
 
 public class CircuitPanel extends JPanel {
 
-    private static final int CAR_LENGTH = 4;
-    private static final int CAR_WIDTH = 10;
+    private static final int CAR_LENGTH = 6;
+    private static final int CAR_WIDTH = 14;
     private static final Color CAR_COLOR = Color.RED;
     private static final Font INFO_FONT = new Font("Arial", Font.PLAIN, 10);
-    public static final Point CAR_STARTING_POSITION = new Point(305, 160);
+    public static final Point CAR_STARTING_POSITION = new Point(196, 28);
+    public static final int CAR_STARTING_ANGLE = 0;
     private static final long MAX_TIME = 30;  // in seconds
-
 
     private int IMAGE_WIDTH;
     private int IMAGE_HEIGHT;
@@ -34,26 +30,24 @@ public class CircuitPanel extends JPanel {
     // the points of the tracks that car has to pass into in order
     // to consider a valid lap (otherwise it could get shortcuts)
     private Rectangle[] checkPoints = {
-            new Rectangle(312, 143, 8, 32),
-            new Rectangle(372, 108, 27, 10),
-            new Rectangle(262, 12, 13, 33),
-            new Rectangle(201, 102, 12, 35),
-            new Rectangle(96, 24, 10, 35),
-            new Rectangle(1, 112, 32, 10),
-            new Rectangle(43, 140, 10, 31),
-            new Rectangle(79, 64, 10, 30)
+            new Rectangle(214, 11, 10, 30),
+            new Rectangle(262, 70, 30, 10),
+            new Rectangle(120, 175, 10, 30),
+            new Rectangle(14, 142, 30, 10),
+            new Rectangle(65, 100, 10, 30 ),
+            new Rectangle(180, 80, 35, 10),
+            new Rectangle(92, 62, 30, 10),
     };
 
     private BitSet checkSteps = new BitSet(checkPoints.length);
 
-    private static final String CIRCUIT_FILENAME = "circuit.png";
-    private static final String REWARD_CIRCUIT_FILENAME = "reward_circuit.png";
+    private static final String CIRCUIT_FILENAME = "track.png";
+    private static final String REWARD_CIRCUIT_FILENAME = "track_reward.png";
     private boolean drawInfo;
     private final BufferedImage circuitImage;
     private final BufferedImage rewardCircuitImage;
     private final Car car;
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss.SSS");
-    private int counter;
     private BufferedImage bufferedImage;
     private long time;
     private boolean isLapCompleted = false;
@@ -155,41 +149,12 @@ public class CircuitPanel extends JPanel {
             imageGraphics.setFont(INFO_FONT);
             imageGraphics.drawString(car.toString(), 10, 10);
             imageGraphics.drawString("REWARD: " + getReward(), 10, 20);
-            imageGraphics.drawString("Checks: " + checkSteps.toString(), 230, 10);
-            imageGraphics.drawString("TIME: " + time, 230, 20);
+            imageGraphics.drawString("Checks: " + checkSteps.toString(), 10, 30);
+            imageGraphics.drawString("TIME: " + time, 10, 40);
         }
 
         // draws the image to the panel
         g.drawImage(bufferedImage, 0, 0, null);
-
-        // optionally saves the image to a file
-        if (false) {
-            try {
-                ImageIO.write(bufferedImage, "JPEG", new File(String.format("src/main/resources/RACE_%d_%s.jpg", (counter++), sdf.format(new Date()))));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void updateCheckpoints() {
-        boolean areAllSet = true;
-        for (int i = 0; i < checkPoints.length; i++) {
-            if (checkPoints[i].contains(car.getX(), car.getY())) {
-                checkSteps.set(i);
-            }
-            if (!checkSteps.get(i)) {
-                areAllSet = false;
-            }
-        }
-
-        if (areAllSet && checkPoints[0].contains(car.getX(), car.getY())) {
-            isLapCompleted = true;
-        }
-    }
-
-    private String addZeroIfNeeded(long value) {
-        return value < 10 ? "0" + value : "" + value;
     }
 
     public void drawCar(Graphics2D imageGraphics) {
@@ -225,10 +190,29 @@ public class CircuitPanel extends JPanel {
         imageGraphics.drawLine((int) (cx + cosAngleLeft), (int) (cy + sinAngleLeft), (int) (cx + cosAngleRight), (int) (cy + sinAngleRight));
     }
 
+    private void updateCheckpoints() {
+        boolean areAllSet = true;
+        for (int i = 0; i < checkPoints.length; i++) {
+            if (checkPoints[i].contains(car.getX(), car.getY())) {
+                checkSteps.set(i);
+            }
+            if (!checkSteps.get(i)) {
+                areAllSet = false;
+            }
+        }
+
+        if (areAllSet && checkPoints[0].contains(car.getX(), car.getY())) {
+            isLapCompleted = true;
+        }
+    }
+
+    private String addZeroIfNeeded(long value) {
+        return value < 10 ? "0" + value : "" + value;
+    }
+
     public byte[] getCurrentFrame() {
         WritableRaster raster = bufferedImage.getRaster();
         DataBufferByte buffer = (DataBufferByte) raster.getDataBuffer();
-        System.out.println("BUFFER SIZE = " + buffer.getData().length);
         return buffer.getData();
     }
 
@@ -274,4 +258,21 @@ public class CircuitPanel extends JPanel {
         long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
         return elapsedTime > MAX_TIME;
     }
+
+//    /**
+//     * the image computed by the algorithm is the difference between the current frame
+//     * and the preceding frame; in this way we can give the algorithm an idea of the
+//     * movement of the car inside the circuit
+//     *
+//     * @param frame1
+//     * @param frame2
+//     * @return
+//     */
+//    private byte[] computeDelta(byte[] frame1, byte[] frame2) {
+//        byte[] delta = new byte[frame1.length];
+//        for (int i = 0; i < delta.length; i++) {
+//            delta[i] = (byte) (frame2[i] - frame1[i]);
+//        }
+//        return delta;
+//    }
 }

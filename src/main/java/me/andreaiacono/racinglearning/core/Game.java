@@ -4,6 +4,7 @@ import me.andreaiacono.racinglearning.gui.CircuitPanel;
 
 public class Game {
 
+    private int epoch;
     public final Car car;
     public final CircuitPanel circuit;
 
@@ -12,16 +13,12 @@ public class Game {
         this.circuit = circuit;
     }
 
-    public void updateCarPosition() {
-        car.setIsOnTrack(circuit.isCarOnTrack());
-        car.updatePosition();
-    }
-
     public byte[] getScreenFrame() {
         return circuit.getCurrentFrame();
     }
 
     public void reset() {
+        System.out.println("Epoch #" + epoch++);
         car.reset();
         circuit.reset();
     }

@@ -13,10 +13,10 @@ public class QLearning {
 
     public static HistoryProcessor.Configuration RACING_HP = new HistoryProcessor.Configuration(
                     4,       //History length
-                    400,     //resize width
-                    192,     //resize height
-                    50,      //crop width
-                    50,      //crop height
+                    299,     //resize width
+                    218,     //resize height
+                    25,      //crop width
+                    25,      //crop height
                     0,       //cropping x offset
                     0,       //cropping y offset
                     4        //skip mod (one frame is picked every x
@@ -76,20 +76,5 @@ public class QLearning {
         }
     }
 
-    /**
-     * the image computed by the algorithm is the difference between the current frame
-     * and the preceding frame; in this way we can give the algorithm an idea of the
-     * movement of the car inside the circuit
-     *
-     * @param frame1
-     * @param frame2
-     * @return
-     */
-    private byte[] computeDelta(byte[] frame1, byte[] frame2) {
-        byte[] delta = new byte[frame1.length];
-        for (int i = 0; i < delta.length; i++) {
-            delta[i] = (byte) (frame2[i] - frame1[i]);
-        }
-        return delta;
-    }
+
 }
