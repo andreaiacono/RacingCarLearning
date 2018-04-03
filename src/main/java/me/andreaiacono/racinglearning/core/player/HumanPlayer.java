@@ -2,7 +2,7 @@ package me.andreaiacono.racinglearning.core.player;
 
 import me.andreaiacono.racinglearning.core.Car;
 import me.andreaiacono.racinglearning.core.Game;
-import me.andreaiacono.racinglearning.gui.CircuitPanel;
+import me.andreaiacono.racinglearning.gui.TrackPanel;
 import me.andreaiacono.racinglearning.misc.DrivingKeyListener;
 
 public class HumanPlayer {
@@ -25,7 +25,7 @@ public class HumanPlayer {
     // the game loop
     public void race(long raceStartTime) throws Exception {
 
-        CircuitPanel circuit = game.circuit;
+        TrackPanel circuit = game.track;
         Car car = game.car;
 
         while (!circuit.isLapCompleted()) {

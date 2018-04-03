@@ -30,7 +30,7 @@ public class GameWorker extends SwingWorker<Void, Void> {
             long raceStartTime = System.currentTimeMillis();
             new HumanPlayer(game, listener).race(raceStartTime);
 
-            if (game.circuit.isLapCompleted()) {
+            if (game.track.isLapCompleted()) {
                 System.out.println("LAP SUCCESSFULLY COMPLETED IN " + (System.currentTimeMillis() - raceStartTime) + "ms");
             }
             else {

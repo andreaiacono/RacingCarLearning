@@ -1,30 +1,30 @@
 package me.andreaiacono.racinglearning.core;
 
-import me.andreaiacono.racinglearning.gui.CircuitPanel;
+import me.andreaiacono.racinglearning.gui.TrackPanel;
 
 public class Game {
 
     private int epoch;
     public final Car car;
-    public final CircuitPanel circuit;
+    public final TrackPanel track;
 
-    public Game(Car car, CircuitPanel circuit) {
+    public Game(Car car, TrackPanel track) {
         this.car = car;
-        this.circuit = circuit;
+        this.track = track;
     }
 
     public byte[] getScreenFrame() {
-        return circuit.getCurrentFrame();
+        return track.getCurrentFrame();
     }
 
     public void reset() {
         System.out.println("Epoch #" + epoch++);
         car.reset();
-        circuit.reset();
+        track.reset();
     }
 
     public boolean isOver() {
-        return !circuit.isCarInsideScreen() || circuit.isLapCompleted() || circuit.isTimeOver();
+        return !track.isCarInsideScreen() || track.isLapCompleted() || track.isTimeOver();
     }
 
     public int move(Command command) {
@@ -32,12 +32,12 @@ public class Game {
         car.applyDirections(command);
 
         // updates the position of the car
-        car.setIsOnTrack(circuit.isCarOnTrack());
+        car.setIsOnTrack(track.isCarOnTrack());
         car.updatePosition();
 
         // refreshes the screen with the new position
-        circuit.updateCircuit();
+        track.updateCircuit();
 
-        return circuit.getReward();
+        return track.getReward();
     }
 }

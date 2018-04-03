@@ -1,6 +1,6 @@
 #Reinforcement Learning Experiments
 
-This repo contains the simulator of a circuit for car racing and various RL techiniques.
+This repo contains the simulator of a track for car racing and various RL techiniques.
 
 TODO:
 - add Q-Learning and Policy Gradients

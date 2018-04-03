@@ -1,7 +1,7 @@
 package me.andreaiacono.racinglearning.core;
 
-import static me.andreaiacono.racinglearning.gui.CircuitPanel.CAR_STARTING_ANGLE;
-import static me.andreaiacono.racinglearning.gui.CircuitPanel.CAR_STARTING_POSITION;
+import static me.andreaiacono.racinglearning.gui.TrackPanel.CAR_STARTING_ANGLE;
+import static me.andreaiacono.racinglearning.gui.TrackPanel.CAR_STARTING_POSITION;
 
 public class Car {
 

@@ -14,15 +14,14 @@ import java.awt.image.WritableRaster;
 import java.text.SimpleDateFormat;
 import java.util.BitSet;
 
-public class CircuitPanel extends JPanel {
+public class TrackPanel extends JPanel {
 
     private static final int CAR_LENGTH = 6;
     private static final int CAR_WIDTH = 14;
     private static final Color CAR_COLOR = Color.RED;
     private static final Font INFO_FONT = new Font("Arial", Font.PLAIN, 10);
-    public static final Point CAR_STARTING_POSITION = new Point(196, 28);
+    public static final Point CAR_STARTING_POSITION = new Point(204, 25);
     public static final int CAR_STARTING_ANGLE = 0;
-    private static final long MAX_TIME = 30;  // in seconds
 
     private int IMAGE_WIDTH;
     private int IMAGE_HEIGHT;
@@ -34,10 +33,13 @@ public class CircuitPanel extends JPanel {
             new Rectangle(262, 70, 30, 10),
             new Rectangle(120, 175, 10, 30),
             new Rectangle(14, 142, 30, 10),
-            new Rectangle(65, 100, 10, 30 ),
+            new Rectangle(65, 100, 10, 30),
             new Rectangle(180, 80, 35, 10),
             new Rectangle(92, 62, 30, 10),
     };
+
+    // the time limits for each checkpoint
+    private long[] checkPointMaxTimes = {2, 5, 9, 12, 14, 17, 21, 25};
 
     private BitSet checkSteps = new BitSet(checkPoints.length);
 
@@ -54,7 +56,7 @@ public class CircuitPanel extends JPanel {
     private Stroke thickStroke = new BasicStroke(2.5f);
     private long startTime;
 
-    public CircuitPanel(Car car, DrivingKeyListener listener, GameParameters gameParameters) throws Exception {
+    public TrackPanel(Car car, DrivingKeyListener listener, GameParameters gameParameters) throws Exception {
         this.drawInfo = gameParameters.getBool(GameParameter.DRAW_INFO);
         circuitImage = gameParameters.getBool(GameParameter.USE_BLACK_AND_WHITE)
                 ? ImageIO.read(ClassLoader.getSystemResource(REWARD_CIRCUIT_FILENAME))
@@ -73,7 +75,7 @@ public class CircuitPanel extends JPanel {
     }
 
     /**
-     * Computes the rewards associated to the position of the car in the circuit.
+     * Computes the rewards associated to the position of the car in the track.
      * If the car is on the track, the reward will be high; if the car is outside the
      * track, the reward will be low. Also, the more checkpoints passed, the better.
      *
@@ -139,7 +141,7 @@ public class CircuitPanel extends JPanel {
         // creates the image where to draw
         Graphics2D imageGraphics = (Graphics2D) bufferedImage.getGraphics();
 
-        // draws the circuit and the car
+        // draws the track and the car
         imageGraphics.drawImage(circuitImage, 0, 0, null);
         drawCar(imageGraphics);
 
@@ -254,15 +256,31 @@ public class CircuitPanel extends JPanel {
         return bufferedImage.getWidth();
     }
 
+    /**
+     * checks that every check point is reached within its time limit.
+     *
+     * @return
+     */
     public boolean isTimeOver() {
-        long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
-        return elapsedTime > MAX_TIME;
+
+        long currentTime = System.currentTimeMillis();
+
+        int firstNotPassedCheck = 0;
+        while (firstNotPassedCheck < checkSteps.length()) {
+            if (!checkSteps.get(firstNotPassedCheck)) {
+                break;
+            }
+            firstNotPassedCheck++;
+        }
+
+        long elapsedTime = (currentTime - startTime) / 1000;
+        return elapsedTime > checkPointMaxTimes[firstNotPassedCheck];
     }
 
 //    /**
 //     * the image computed by the algorithm is the difference between the current frame
 //     * and the preceding frame; in this way we can give the algorithm an idea of the
-//     * movement of the car inside the circuit
+//     * movement of the car inside the track
 //     *
 //     * @param frame1
 //     * @param frame2

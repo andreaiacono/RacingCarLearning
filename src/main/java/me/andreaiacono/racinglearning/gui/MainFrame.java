@@ -21,9 +21,9 @@ public class MainFrame extends JFrame {
         // creates the car
         car = new Car();
 
-        // creates and adds the circuit to this window
+        // creates and adds the track to this window
         GameParameters params = new GameParameters(args);
-        CircuitPanel panel = new CircuitPanel(car, listener, params);
+        TrackPanel panel = new TrackPanel(car, listener, params);
         Game game = new Game(car, panel);
 
         panel.setFocusable(true);

@@ -12,7 +12,7 @@ public class QLearning {
     private final Game game;
 
     public static HistoryProcessor.Configuration RACING_HP = new HistoryProcessor.Configuration(
-                    4,       //History length
+                    10,       //History length
                     299,     //resize width
                     218,     //resize height
                     25,      //crop width
@@ -39,7 +39,7 @@ public class QLearning {
             );
 
     public static DQNFactoryStdConv.Configuration RACING_NET_CONFIG = new DQNFactoryStdConv.Configuration(
-                    0.00025,    //learning rate
+                    0.9,    //learning rate
                     0.000,              //l2 regularization
                     null,
                     null

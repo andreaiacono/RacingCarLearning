@@ -3,7 +3,7 @@ package me.andreaiacono.racinglearning.rl;
 import org.deeplearning4j.rl4j.space.Encodable;
 
 /**
- * This is a frame of the screen with the circuit and the car.
+ * This is a frame of the screen with the track and the car.
  */
 public class ScreenFrameState implements Encodable {
 
