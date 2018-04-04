@@ -11,7 +11,11 @@ public class QLearningPlayer {
         this.game = game;
     }
 
+    public void learn() {
+        new QLearning(game).startLearning("racing-dql.net.model");
+    }
+
     public void race() {
-        new QLearning(game).startLearning();
+        new QLearning(game).race("racing-dql.net.model");
     }
 }

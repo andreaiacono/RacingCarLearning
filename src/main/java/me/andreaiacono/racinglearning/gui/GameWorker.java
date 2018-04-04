@@ -40,7 +40,7 @@ public class GameWorker extends SwingWorker<Void, Void> {
         }
         // car driven by the RL algorithm
         else {
-            new QLearningPlayer(game).race();
+            new QLearningPlayer(game).learn();
         }
 
         System.exit(0);

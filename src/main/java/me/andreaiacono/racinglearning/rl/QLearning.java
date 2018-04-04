@@ -1,11 +1,14 @@
 package me.andreaiacono.racinglearning.rl;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import me.andreaiacono.racinglearning.core.Game;
 import org.deeplearning4j.rl4j.learning.HistoryProcessor;
 import org.deeplearning4j.rl4j.learning.sync.qlearning.discrete.QLearningDiscreteConv;
 import org.deeplearning4j.rl4j.network.dqn.DQNFactoryStdConv;
 import org.deeplearning4j.rl4j.util.DataManager;
 import org.deeplearning4j.rl4j.learning.sync.qlearning.QLearning.QLConfiguration;
+
+import java.io.File;
 
 public class QLearning {
 
@@ -50,25 +53,41 @@ public class QLearning {
         this.game = game;
     }
 
-    public void startLearning() {
+    public void startLearning(String model) {
 
         try {
 
             DataManager manager = new DataManager(true);
-
-            //setup the emulation environment through ALE, you will need a ROM file
             RacingMDP mdp = new RacingMDP(game);
 
-            //setup the training
+            // setups and starts training
             QLearningDiscreteConv<ScreenFrameState> dql = new QLearningDiscreteConv(mdp, RACING_NET_CONFIG, RACING_HP, RACING_QL, manager);
-
-            //start the training
             dql.train();
 
-            //save the model at the end
-            dql.getPolicy().save("racing-dql.model");
+            dql.getNeuralNet().save(model);
+            mdp.close();
 
-            //close the ALE env
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+
+    public void race(String model) {
+        try {
+
+            DataManager manager = new DataManager(false);
+
+
+            RacingMDP mdp = new RacingMDP(game);
+            QLearningDiscreteConv<ScreenFrameState> dql = new QLearningDiscreteConv(mdp, RACING_NET_CONFIG, RACING_HP, RACING_QL, manager);
+
+            // loads the trained model
+            manager.load(new File(model), JsonNode.class);
+
+            // runs the model
+            dql.getPolicy().play(mdp);
+
             mdp.close();
 
         } catch (Exception ex) {
