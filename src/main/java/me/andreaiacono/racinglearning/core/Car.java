@@ -1,12 +1,14 @@
 package me.andreaiacono.racinglearning.core;
 
+import java.awt.*;
+
 import static me.andreaiacono.racinglearning.gui.TrackPanel.CAR_STARTING_ANGLE;
-import static me.andreaiacono.racinglearning.gui.TrackPanel.CAR_STARTING_POSITION;
 
 public class Car {
 
     private static final double AUTO_SLOW_DOWN = 0.2;
-    private static final int MAX_SPEED = 6;
+    public static final int BIG_MAX_SPEED = 7;
+    public static final int SMALL_MAX_SPEED = 4;
     private static final int MAX_STEERING_ANGLE = 45;
     private boolean isOnTrack;
 
@@ -22,13 +24,11 @@ public class Car {
 
     // the position of the car (as of the middle point)
     private double x, y;
-
-    public Car() {
-        reset();
-    }
+    private Point startingPosition;
+    private int maxSpeed;
 
     public void accelerate(double qty) {
-        velocity.speed = Math.min(velocity.speed + qty, MAX_SPEED);
+        velocity.speed = Math.min(velocity.speed + qty, maxSpeed);
     }
 
     public void brake(double qty) {
@@ -118,8 +118,8 @@ public class Car {
     }
 
     public void reset() {
-        x = CAR_STARTING_POSITION.x;
-        y = CAR_STARTING_POSITION.y;
+        x = startingPosition.x;
+        y = startingPosition.y;
         adjustmentAngle = 0;
         velocity = new Velocity(0, CAR_STARTING_ANGLE);
     }
@@ -140,6 +140,15 @@ public class Car {
         sb.append(", y=").append((int) y);
         sb.append('}');
         return sb.toString();
+    }
+
+    public void setStartingPosition(Point startingPosition) {
+
+        this.startingPosition = startingPosition;
+    }
+
+    public void setMaxSpeed(int maxSpeed) {
+        this.maxSpeed = maxSpeed;
     }
 
     public static class Velocity {

@@ -40,4 +40,12 @@ public class Game {
 
         return track.getReward();
     }
+
+    public int getScreenWidth() {
+        return track.getScreenWidth();
+    }
+
+    public int getScreenHeight() {
+        return track.getScreenHeight();
+    }
 }

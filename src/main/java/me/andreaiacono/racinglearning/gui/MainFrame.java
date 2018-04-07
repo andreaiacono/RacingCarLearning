@@ -13,16 +13,15 @@ public class MainFrame extends JFrame {
     private final GameWorker gameWorker;
     private final DrivingKeyListener listener = new DrivingKeyListener();
 
-    public MainFrame(String[] args) throws Exception {
+    public MainFrame(GameParameters params) throws Exception {
 
-        super("Racing Car Learning");
+        super("Racing Car - " + params.getValue(GameParameters.TYPE_PARAM));
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         // creates the car
         car = new Car();
 
         // creates and adds the track to this window
-        GameParameters params = new GameParameters(args);
         TrackPanel panel = new TrackPanel(car, listener, params);
         Game game = new Game(car, panel);
 

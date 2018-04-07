@@ -1,36 +1,47 @@
 package me.andreaiacono.racinglearning.core;
 
-import me.andreaiacono.racinglearning.misc.GameParameter;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Options;
 
 public class GameParameters {
 
-    final Map<GameParameter, Object> params = new HashMap<>();
+    private final CommandLine cmd;
+    public final static String TYPE_PARAM = "t";
+    public final static String DRAW_INFO_PARAM = "i";
+    public final static String USE_BW_PARAM = "b";
+    public static final String MODEL_NAME_PARAM = "m";
+    public static final String SMALL_PARAM = "s";
 
-    public GameParameters(String[] args) {
-        if (args.length > 0) {
-            addParam(GameParameter.IS_HUMAN, args[0].equalsIgnoreCase("human"));
-        }
-        if (args.length > 1) {
-            addParam(GameParameter.DRAW_INFO, args[1].equalsIgnoreCase("draw"));
-        }
-        if (args.length > 2) {
-            addParam(GameParameter.USE_BLACK_AND_WHITE, args[2].equalsIgnoreCase("b&w"));
+    public enum Type {
+        HUMAN, MACHINE_LEARN, MACHINE_RACE;
+    }
+
+    public GameParameters(String[] args) throws Exception {
+
+        Options options = new Options();
+        options.addOption(TYPE_PARAM, true, "Racing type: [HUMAN, LEARN, RACE]");
+        options.addOption(DRAW_INFO_PARAM, false, "Draws info on the screen");
+        options.addOption(USE_BW_PARAM, false, "Draws the screen in Black&White");
+        options.addOption(MODEL_NAME_PARAM, true, "The filename of the model to load/save");
+        options.addOption(SMALL_PARAM, false, "Reduce the size of the screen [useful for speedup learning]");
+
+        CommandLineParser parser = new DefaultParser();
+        cmd = parser.parse( options, args);
+
+        if (cmd.getOptionValue(GameParameters.TYPE_PARAM) == null) {
+            System.out.println("No type argument specified. Argument -t can be [HUMAN, MACHINE_LEARN, MACHINE_RACE]");
+            System.exit(-1);
         }
     }
 
-    public void addParam(GameParameter param, Object value) {
-        params.put(param, value);
+    public String getValue(String paramName) {
+        return cmd.getOptionValue(paramName);
     }
 
-    public String getValue(GameParameter param) {
-        return params.get(param).toString();
-    }
-
-    public boolean getBool(GameParameter param) {
-        return (boolean) params.get(param);
+    public boolean getBool(String paramName) {
+        return cmd.hasOption(paramName);
     }
 
 }

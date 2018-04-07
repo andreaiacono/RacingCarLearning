@@ -14,21 +14,22 @@ public class QLearning {
 
     private final Game game;
 
+//    FIX SCRREEN SIZE
     public static HistoryProcessor.Configuration RACING_HP = new HistoryProcessor.Configuration(
-                    10,       //History length
-                    299,     //resize width
-                    218,     //resize height
-                    25,      //crop width
-                    25,      //crop height
-                    0,       //cropping x offset
-                    0,       //cropping y offset
-                    4        //skip mod (one frame is picked every x
-            );
+            10,       //History length
+            150,     //resize width
+            109,     //resize height
+            20,      //crop width
+            20,      //crop height
+            0,       //cropping x offset
+            0,       //cropping y offset
+            4        //skip mod (one frame is picked every x
+    );
 
     public static QLConfiguration RACING_QL = new QLConfiguration(
                     12345,      //Random seed
                     10000,    //Max step By epoch
-                    8000000,  //Max step
+                    10000000,  //Max step
                     1000000,  //Max size of experience replay
                     32,       //size of batches
                     10000,    //target update (hard)
@@ -42,57 +43,45 @@ public class QLearning {
             );
 
     public static DQNFactoryStdConv.Configuration RACING_NET_CONFIG = new DQNFactoryStdConv.Configuration(
-                    0.9,    //learning rate
-                    0.000,              //l2 regularization
-                    null,
-                    null
-            );
+            0.5,    //learning rate
+            0.000,              //l2 regularization
+            null,
+            null
+    );
 
 
     public QLearning(Game game) {
         this.game = game;
     }
 
-    public void startLearning(String model) {
+    public void learn(String model) throws Exception {
 
-        try {
+        DataManager manager = new DataManager(true);
+        RacingMDP mdp = new RacingMDP(game);
 
-            DataManager manager = new DataManager(true);
-            RacingMDP mdp = new RacingMDP(game);
+        // setups and starts training
+        QLearningDiscreteConv<ScreenFrameState> dql = new QLearningDiscreteConv(mdp, RACING_NET_CONFIG, RACING_HP, RACING_QL, manager);
+        dql.train();
 
-            // setups and starts training
-            QLearningDiscreteConv<ScreenFrameState> dql = new QLearningDiscreteConv(mdp, RACING_NET_CONFIG, RACING_HP, RACING_QL, manager);
-            dql.train();
-
-            dql.getNeuralNet().save(model);
-            mdp.close();
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        dql.getNeuralNet().save(model);
+        mdp.close();
     }
 
 
-    public void race(String model) {
-        try {
+    public void race(String model) throws Exception {
 
-            DataManager manager = new DataManager(false);
+        DataManager manager = new DataManager(false);
 
+        RacingMDP mdp = new RacingMDP(game);
+        QLearningDiscreteConv<ScreenFrameState> dql = new QLearningDiscreteConv(mdp, RACING_NET_CONFIG, RACING_HP, RACING_QL, manager);
 
-            RacingMDP mdp = new RacingMDP(game);
-            QLearningDiscreteConv<ScreenFrameState> dql = new QLearningDiscreteConv(mdp, RACING_NET_CONFIG, RACING_HP, RACING_QL, manager);
+        // loads the trained model
+        manager.load(new File(model), JsonNode.class);
 
-            // loads the trained model
-            manager.load(new File(model), JsonNode.class);
+        // runs the model
+        dql.getPolicy().play(mdp);
 
-            // runs the model
-            dql.getPolicy().play(mdp);
-
-            mdp.close();
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        mdp.close();
     }
 
 

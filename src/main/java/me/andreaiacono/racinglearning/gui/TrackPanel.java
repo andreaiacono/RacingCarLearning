@@ -3,7 +3,6 @@ package me.andreaiacono.racinglearning.gui;
 import me.andreaiacono.racinglearning.core.GameParameters;
 import me.andreaiacono.racinglearning.misc.DrivingKeyListener;
 import me.andreaiacono.racinglearning.core.Car;
-import me.andreaiacono.racinglearning.misc.GameParameter;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -16,11 +15,14 @@ import java.util.BitSet;
 
 public class TrackPanel extends JPanel {
 
-    private static final int CAR_LENGTH = 6;
-    private static final int CAR_WIDTH = 14;
+    private static final int SMALL_CAR_LENGTH = 3;
+    private static final int SMALL_CAR_WIDTH = 8;
+    private static final int BIG_CAR_LENGTH = SMALL_CAR_LENGTH * 2;
+    private static final int BIG_CAR_WIDTH = SMALL_CAR_WIDTH * 2;
     private static final Color CAR_COLOR = Color.RED;
     private static final Font INFO_FONT = new Font("Arial", Font.PLAIN, 10);
-    public static final Point CAR_STARTING_POSITION = new Point(204, 25);
+    private static final Point SMALL_CAR_STARTING_POSITION = new Point(102, 12);
+    private static final Point BIG_CAR_STARTING_POSITION = new Point(204, 25);
     public static final int CAR_STARTING_ANGLE = 0;
 
     private int IMAGE_WIDTH;
@@ -28,7 +30,7 @@ public class TrackPanel extends JPanel {
 
     // the points of the tracks that car has to pass into in order
     // to consider a valid lap (otherwise it could get shortcuts)
-    private Rectangle[] checkPoints = {
+    private Rectangle[] bigCheckPoints = {
             new Rectangle(214, 11, 10, 30),
             new Rectangle(262, 70, 30, 10),
             new Rectangle(120, 175, 10, 30),
@@ -37,14 +39,29 @@ public class TrackPanel extends JPanel {
             new Rectangle(180, 80, 35, 10),
             new Rectangle(92, 62, 30, 10),
     };
+    private Rectangle[] smallCheckPoints = {
+            new Rectangle(107, 5, 5, 15),
+            new Rectangle(131, 35, 15, 5),
+            new Rectangle(60, 87, 5, 15),
+            new Rectangle(7, 71, 15, 5),
+            new Rectangle(32, 50, 5, 15),
+            new Rectangle(90, 40, 17, 5),
+            new Rectangle(46, 31, 15, 5),
+    };
+
+    private Rectangle[] checkPoints;
+
 
     // the time limits for each checkpoint
+    private long[] smallCheckPointMaxTimes = {1, 2, 4, 6, 7, 8, 10, 12};
     private long[] checkPointMaxTimes = {2, 5, 9, 12, 14, 17, 21, 25};
 
-    private BitSet checkSteps = new BitSet(checkPoints.length);
+    private BitSet checkSteps;
 
     private static final String CIRCUIT_FILENAME = "track.png";
     private static final String REWARD_CIRCUIT_FILENAME = "track_reward.png";
+    private static final String SMALL_CIRCUIT_FILENAME = "track_small.png";
+    private static final String SMALL_REWARD_CIRCUIT_FILENAME = "track_reward_small.png";
     private boolean drawInfo;
     private final BufferedImage circuitImage;
     private final BufferedImage rewardCircuitImage;
@@ -55,16 +72,22 @@ public class TrackPanel extends JPanel {
     private boolean isLapCompleted = false;
     private Stroke thickStroke = new BasicStroke(2.5f);
     private long startTime;
+    private double carWidth;
+    private double carLength;
 
     public TrackPanel(Car car, DrivingKeyListener listener, GameParameters gameParameters) throws Exception {
-        this.drawInfo = gameParameters.getBool(GameParameter.DRAW_INFO);
-        circuitImage = gameParameters.getBool(GameParameter.USE_BLACK_AND_WHITE)
-                ? ImageIO.read(ClassLoader.getSystemResource(REWARD_CIRCUIT_FILENAME))
-                : ImageIO.read(ClassLoader.getSystemResource(CIRCUIT_FILENAME));
-        rewardCircuitImage = ImageIO.read(ClassLoader.getSystemResource(REWARD_CIRCUIT_FILENAME));
+        this.drawInfo = gameParameters.getBool(GameParameters.DRAW_INFO_PARAM);
+        String circuitFilename = gameParameters.getBool(GameParameters.SMALL_PARAM) ? SMALL_CIRCUIT_FILENAME : CIRCUIT_FILENAME;
+        String rewardCircuitFilename = gameParameters.getBool(GameParameters.SMALL_PARAM) ? SMALL_REWARD_CIRCUIT_FILENAME : REWARD_CIRCUIT_FILENAME;
 
+        circuitImage = gameParameters.getBool(GameParameters.USE_BW_PARAM)
+                ? ImageIO.read(ClassLoader.getSystemResource(rewardCircuitFilename))
+                : ImageIO.read(ClassLoader.getSystemResource(circuitFilename));
+
+        rewardCircuitImage = ImageIO.read(ClassLoader.getSystemResource(rewardCircuitFilename));
+
+        checkPoints = gameParameters.getBool(GameParameters.SMALL_PARAM) ? smallCheckPoints : bigCheckPoints;
         bufferedImage = new BufferedImage(circuitImage.getWidth(), circuitImage.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-
         IMAGE_WIDTH = circuitImage.getWidth();
         IMAGE_HEIGHT = circuitImage.getHeight();
 
@@ -72,6 +95,15 @@ public class TrackPanel extends JPanel {
         startTime = System.currentTimeMillis();
         setFocusable(true);
         addKeyListener(listener);
+        checkSteps = new BitSet(checkPoints.length);
+
+        Point startingPosition = gameParameters.getBool(GameParameters.SMALL_PARAM) ? SMALL_CAR_STARTING_POSITION : BIG_CAR_STARTING_POSITION;
+        car.setStartingPosition(startingPosition);
+        car.setMaxSpeed(gameParameters.getBool(GameParameters.SMALL_PARAM) ? Car.SMALL_MAX_SPEED : Car.BIG_MAX_SPEED);
+        car.reset();
+
+        carWidth = gameParameters.getBool(GameParameters.SMALL_PARAM) ? SMALL_CAR_WIDTH : BIG_CAR_WIDTH;
+        carLength = gameParameters.getBool(GameParameters.SMALL_PARAM) ? SMALL_CAR_LENGTH : BIG_CAR_LENGTH;
     }
 
     /**
@@ -164,17 +196,17 @@ public class TrackPanel extends JPanel {
         // computes and draws the car
         double cx = car.getX();
         double cy = car.getY();
-        double angleLeft = car.getDirection() - CAR_WIDTH;
-        double angleRight = car.getDirection() + CAR_WIDTH;
+        double angleLeft = car.getDirection() - carWidth;
+        double angleRight = car.getDirection() + carWidth;
 
-        double cosAngleLeft = Math.cos(Math.toRadians(angleLeft)) * CAR_LENGTH;
-        double sinAngleLeft = Math.sin(Math.toRadians(angleLeft)) * CAR_LENGTH;
-        double cosAngleRight = Math.cos(Math.toRadians(angleRight)) * CAR_LENGTH;
-        double sinAngleRight = Math.sin(Math.toRadians(angleRight)) * CAR_LENGTH;
-        double cosAngleBackLeft = Math.cos(Math.toRadians((angleLeft - 180) % 360)) * CAR_LENGTH;
-        double sinAngleBackLeft = Math.sin(Math.toRadians((angleLeft - 180) % 360)) * CAR_LENGTH;
-        double cosAngleBackRight = Math.cos(Math.toRadians((angleRight - 180) % 360)) * CAR_LENGTH;
-        double sinAngleBackRight = Math.sin(Math.toRadians((angleRight - 180) % 360)) * CAR_LENGTH;
+        double cosAngleLeft = Math.cos(Math.toRadians(angleLeft)) * carLength;
+        double sinAngleLeft = Math.sin(Math.toRadians(angleLeft)) * carLength;
+        double cosAngleRight = Math.cos(Math.toRadians(angleRight)) * carLength;
+        double sinAngleRight = Math.sin(Math.toRadians(angleRight)) * carLength;
+        double cosAngleBackLeft = Math.cos(Math.toRadians((angleLeft - 180) % 360)) * carLength;
+        double sinAngleBackLeft = Math.sin(Math.toRadians((angleLeft - 180) % 360)) * carLength;
+        double cosAngleBackRight = Math.cos(Math.toRadians((angleRight - 180) % 360)) * carLength;
+        double sinAngleBackRight = Math.sin(Math.toRadians((angleRight - 180) % 360)) * carLength;
 
         Polygon drawnCar = new Polygon();
         Point firstPoint = new Point((int) (cx + cosAngleLeft), (int) (cy + sinAngleLeft));

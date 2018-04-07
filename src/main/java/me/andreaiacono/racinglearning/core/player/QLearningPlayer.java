@@ -11,11 +11,11 @@ public class QLearningPlayer {
         this.game = game;
     }
 
-    public void learn() {
-        new QLearning(game).startLearning("racing-dql.net.model");
+    public void learn(String modelName) throws Exception {
+        new QLearning(game).learn(modelName);
     }
 
-    public void race() {
-        new QLearning(game).race("racing-dql.net.model");
+    public void race(String modelName) throws Exception {
+        new QLearning(game).race(modelName);
     }
 }
