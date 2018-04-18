@@ -39,7 +39,7 @@ public class HumanPlayer {
             // refreshes the screen with the new position
             circuit.updateCircuit(raceStartTime);
 
-            car.applyDirections(listener.getCommand());
+            car.applyCommand(listener.getCommand());
             if (!circuit.isCarInsideScreen()) {
                 break;
             }

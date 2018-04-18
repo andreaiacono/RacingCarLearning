@@ -29,7 +29,7 @@ public class Game {
 
     public int move(Command command) {
 
-        car.applyDirections(command);
+        car.applyCommand(command);
 
         // updates the position of the car
         car.setIsOnTrack(track.isCarOnTrack());

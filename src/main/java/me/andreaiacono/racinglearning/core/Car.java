@@ -37,8 +37,10 @@ public class Car {
 
     public void steer(double angle) {
 
-        double heading = Math.max(-MAX_STEERING_ANGLE, Math.min(angle, MAX_STEERING_ANGLE));
-        velocity.direction = (velocity.direction + heading) % 360.0;
+        if (velocity.speed > 0) {
+            double heading = Math.max(-MAX_STEERING_ANGLE, Math.min(angle, MAX_STEERING_ANGLE));
+            velocity.direction = (velocity.direction + heading) % 360.0;
+        }
 
 //        steeringAngle = Math.max(-MAX_STEERING_ANGLE, Math.min(angle, MAX_STEERING_ANGLE));
 //        adjustmentAngle = steeringAngle;
@@ -56,7 +58,7 @@ public class Car {
         return velocity.direction;
     }
 
-    public void applyDirections(Command command) {
+    public void applyCommand(Command command) {
 
         if (command.getFrontalValue() == 1) {
             accelerate(0.4);
