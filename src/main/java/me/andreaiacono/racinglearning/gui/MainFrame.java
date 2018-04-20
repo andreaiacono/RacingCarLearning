@@ -23,7 +23,7 @@ public class MainFrame extends JFrame {
 
         // creates and adds the track to this window
         TrackPanel panel = new TrackPanel(car, listener, params);
-        Game game = new Game(car, panel);
+        Game game = new Game(car, panel, params);
 
         panel.setFocusable(true);
         add(panel);

@@ -1,16 +1,24 @@
 package me.andreaiacono.racinglearning.core;
 
+import me.andreaiacono.racinglearning.gui.GraphFrame;
 import me.andreaiacono.racinglearning.gui.TrackPanel;
 
 public class Game {
 
     private int epoch;
+    private long epochReward;
     public final Car car;
     public final TrackPanel track;
+    private GraphFrame graphFrame;
+    private boolean hasGraph;
 
-    public Game(Car car, TrackPanel track) {
+    public Game(Car car, TrackPanel track, GameParameters params) {
         this.car = car;
         this.track = track;
+        hasGraph = params.getValue(GameParameters.TYPE_PARAM).equals(GameParameters.Type.MACHINE_LEARN.toString());
+        if (hasGraph) {
+            this.graphFrame = new GraphFrame();
+        }
     }
 
     public byte[] getScreenFrame() {
@@ -19,6 +27,10 @@ public class Game {
 
     public void reset() {
         System.out.println("Epoch #" + epoch++);
+        if (hasGraph) {
+            graphFrame.addValue(epochReward);
+            epochReward = 0;
+        }
         car.reset();
         track.reset();
     }
@@ -38,6 +50,7 @@ public class Game {
         // refreshes the screen with the new position
         track.updateCircuit();
 
+        epochReward += track.getReward();
         return track.getReward();
     }
 
