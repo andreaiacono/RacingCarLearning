@@ -40,7 +40,7 @@ public class Game {
         }
         moveNumber = 0;
         car.reset();
-        if (epoch % trackDuration == 1) {
+        if (epoch % trackDuration == 0) {
             track.createNew();
         }
     }
