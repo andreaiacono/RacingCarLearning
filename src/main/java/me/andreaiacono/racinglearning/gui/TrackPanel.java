@@ -11,7 +11,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
 import java.text.SimpleDateFormat;
-import java.util.BitSet;
 import java.util.Random;
 
 public class TrackPanel extends JPanel {
@@ -30,10 +29,9 @@ public class TrackPanel extends JPanel {
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss.SSS");
     private BufferedImage racingImage;
     private long time;
-    private Stroke thickStroke = new BasicStroke(3f);
+    private Stroke carHeadSize;
     private long startTime;
-    private double carWidth;
-    private double carLength;
+    private double carSize;
     private final static Random random = new Random(123);
 
     public TrackPanel(Car car, DrivingKeyListener listener, int size, GameParameters gameParameters, float scale) {
@@ -50,8 +48,8 @@ public class TrackPanel extends JPanel {
         car.setStartingPosition(startingPosition);
         car.setMaxSpeed(Car.SMALL_MAX_SPEED);
 
-        carWidth = 5;
-        carLength = 3;
+        carSize = size / 25;
+        carHeadSize = new BasicStroke(size / 80);
 
         createNew();
     }
@@ -128,10 +126,10 @@ public class TrackPanel extends JPanel {
         // computes and draws the car
         double cx = car.getX();
         double cy = car.getY();
-        double angleLeft = car.getDirection() - carWidth;
-        double angleRight = car.getDirection() + carWidth;
+        double angleLeft = car.getDirection() - carSize;
+        double angleRight = car.getDirection() + carSize;
 
-        double carSpeedLength = carLength + car.getVelocity().speed;
+        double carSpeedLength = car.getVelocity().speed * 2;
 
         double cosAngleLeft = Math.cos(Math.toRadians(angleLeft)) * carSpeedLength;
         double sinAngleLeft = Math.sin(Math.toRadians(angleLeft)) * carSpeedLength;
@@ -154,7 +152,7 @@ public class TrackPanel extends JPanel {
         imageGraphics.fillPolygon(drawnCar);
 
         imageGraphics.setColor(Color.YELLOW);
-        imageGraphics.setStroke(thickStroke);
+        imageGraphics.setStroke(carHeadSize);
         imageGraphics.drawLine((int) (cx + cosAngleLeft), (int) (cy + sinAngleLeft), (int) (cx + cosAngleRight), (int) (cy + sinAngleRight));
     }
 
