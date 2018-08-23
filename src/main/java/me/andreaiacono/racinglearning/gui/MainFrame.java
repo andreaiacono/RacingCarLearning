@@ -19,19 +19,23 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         int size = params.isProvided(GameParameters.SIZE_PARAM) ?
-            Integer.parseInt(params.getValue(GameParameters.SIZE_PARAM))
-            : 100;
+                Integer.parseInt(params.getValue(GameParameters.SIZE_PARAM))
+                : 100;
+
+        float scale = params.isProvided(GameParameters.SCALE_PARAM) ?
+                Float.parseFloat(params.getValue(GameParameters.SCALE_PARAM))
+                : 1;
 
         // creates the car
         car = new Car();
 
         // creates and adds the track to this window
-        TrackPanel panel = new TrackPanel(car, listener, size, params);
+        TrackPanel panel = new TrackPanel(car, listener, size, params, scale);
         Game game = new Game(car, panel, params);
 
         panel.setFocusable(true);
         add(panel);
-        setSize(size, size+20);
+        setSize((int) (size * scale), (int) (size * scale) + 30);
 
         // starts the game
         gameWorker = new GameWorker(game, params, listener);

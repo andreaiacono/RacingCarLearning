@@ -21,32 +21,28 @@ public class TrackPanel extends JPanel {
     private static final int TILES_SIDE_NUMBER = 5;
     private final int size;
 
-    private int IMAGE_WIDTH;
-    private int IMAGE_HEIGHT;
-
     private boolean drawInfo;
 
     // the racing track with the car drawn on it
     private BufferedImage trackImage;
     private final Car car;
+    private float scale;
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss.SSS");
     private BufferedImage racingImage;
     private long time;
-    private boolean isLapCompleted = false;
     private Stroke thickStroke = new BasicStroke(3f);
     private long startTime;
     private double carWidth;
     private double carLength;
     private final static Random random = new Random(123);
 
-    public TrackPanel(Car car, DrivingKeyListener listener, int size, GameParameters gameParameters) throws Exception {
+    public TrackPanel(Car car, DrivingKeyListener listener, int size, GameParameters gameParameters, float scale) {
 
         this.drawInfo = gameParameters.getBool(GameParameters.DRAW_INFO_PARAM);
         this.size = size;
-        IMAGE_WIDTH = size;
-        IMAGE_HEIGHT = size;
 
         this.car = car;
+        this.scale = scale;
         setFocusable(true);
         addKeyListener(listener);
 
@@ -54,8 +50,8 @@ public class TrackPanel extends JPanel {
         car.setStartingPosition(startingPosition);
         car.setMaxSpeed(Car.SMALL_MAX_SPEED);
 
-        carWidth = 5; // size / 6; //gameParameters.getBool(GameParameters.SMALL_PARAM) ? SMALL_CAR_WIDTH : BIG_CAR_WIDTH;
-        carLength = 3; //size / 20; //gameParameters.getBool(GameParameters.SMALL_PARAM) ? SMALL_CAR_LENGTH : BIG_CAR_LENGTH;
+        carWidth = 5;
+        carLength = 3;
 
         createNew();
     }
@@ -86,23 +82,18 @@ public class TrackPanel extends JPanel {
         int reward = (int) car.getVelocity().speed;
 
         if (car.getVelocity().speed == 0) {
-            reward -= 50;
+            return -100;
         }
 
 //        // the more checkpoints passed in order, the more reward gained
 //        reward += getCheckPointsReward();
 
         // being on track is a lot better than being off track
-        reward += isCarOnTrack() ? 500 : -100;
+        reward += isCarOnTrack() ? 1000 : -100;
 
 //        // the more time passes, the worse is  /// MISLEADING!
-        long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
-        reward += 20 * elapsedTime;
-
-        // if the lap was completed, super reward!
-        if (isLapCompleted) {
-            reward += 10000;
-        }
+//        long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
+//        reward += 20 * elapsedTime;
 
         return reward;
     }
@@ -129,7 +120,7 @@ public class TrackPanel extends JPanel {
         }
 
         // draws the image to the panel
-        g.drawImage(racingImage.getScaledInstance(size * 2, size * 2, Image.SCALE_FAST), 0, 0, null);
+        g.drawImage(racingImage.getScaledInstance((int) (size * scale), (int) (size * scale), Image.SCALE_FAST), 0, 0, null);
     }
 
     public void drawCar(Graphics2D imageGraphics) {
@@ -178,7 +169,7 @@ public class TrackPanel extends JPanel {
     }
 
     public boolean isCarInsideScreen() {
-        return car.getX() >= 0 && car.getY() >= 0 && car.getX() < IMAGE_WIDTH && car.getY() < IMAGE_HEIGHT;
+        return car.getX() >= 0 && car.getY() >= 0 && car.getX() < size && car.getY() < size;
     }
 
     public boolean isCarOnTrack() {
@@ -192,10 +183,6 @@ public class TrackPanel extends JPanel {
         int blue = (pixel) & 0xff;
 
         return red == 0 && green == 0 && blue == 0;
-    }
-
-    public boolean isLapCompleted() {
-        return isLapCompleted;
     }
 
     public void updateCircuit() {

@@ -28,7 +28,7 @@ public class HumanPlayer {
         TrackPanel circuit = game.track;
         Car car = game.car;
 
-        while (!circuit.isLapCompleted()) {
+        while (true) {
 
             long startTime = System.currentTimeMillis();
 
