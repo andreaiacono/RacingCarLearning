@@ -46,6 +46,7 @@ public class GameWorker extends SwingWorker<Void, Void> {
                     System.exit(-1);
                 }
                 new QLearningPlayer(game).learn(modelName);
+
             }
             // machine race using a previously trained model
             else if (params.getValue(GameParameters.TYPE_PARAM).equals(GameParameters.Type.MACHINE_RACE.toString())) {

@@ -5,7 +5,9 @@ import me.andreaiacono.racinglearning.gui.TrackPanel;
 
 public class Game {
 
+    private Long trackDuration;
     private int epoch;
+    private int moveNumber;
     private long epochReward;
     public final Car car;
     public final TrackPanel track;
@@ -15,6 +17,10 @@ public class Game {
     public Game(Car car, TrackPanel track, GameParameters params) {
         this.car = car;
         this.track = track;
+        this.trackDuration = params.getValueWithDefault(GameParameters.TRACK_DURATION, 1L);
+        if (trackDuration == 0) {
+            trackDuration = Long.MAX_VALUE;
+        }
         hasGraph = params.getValue(GameParameters.TYPE_PARAM).equals(GameParameters.Type.MACHINE_LEARN.toString());
         if (hasGraph) {
             this.graphFrame = new GraphFrame();
@@ -26,21 +32,26 @@ public class Game {
     }
 
     public void reset() {
-        System.out.println("Epoch #" + epoch++);
+//        System.out.println("Epoch #" + epoch);
+        epoch ++;
         if (hasGraph) {
             graphFrame.addValue(epochReward);
             epochReward = 0;
         }
+        moveNumber = 0;
         car.reset();
-        track.reset();
+        if (epoch % trackDuration == 1) {
+            track.createNew();
+        }
     }
 
     public boolean isOver() {
         return !track.isCarInsideScreen() || track.isLapCompleted() || track.isTimeOver();
     }
 
-    public int move(Command command) {
+    public long move(Command command) {
 
+        moveNumber++;
         car.applyCommand(command);
 
         // updates the position of the car
@@ -50,15 +61,14 @@ public class Game {
         // refreshes the screen with the new position
         track.updateCircuit();
 
-        epochReward += track.getReward();
-        return track.getReward();
+        long reward = track.getReward();
+        epochReward += reward;
+        return reward;
     }
 
-    public int getScreenWidth() {
-        return track.getScreenWidth();
-    }
-
-    public int getScreenHeight() {
-        return track.getScreenHeight();
+    public void saveChartImage(String filename) throws Exception {
+        if (hasGraph) {
+            graphFrame.saveChartAsImage(filename);
+        }
     }
 }

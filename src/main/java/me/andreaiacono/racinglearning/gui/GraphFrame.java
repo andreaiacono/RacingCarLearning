@@ -1,74 +1,59 @@
 package me.andreaiacono.racinglearning.gui;
 
-import com.sun.tools.visualvm.charts.ChartFactory;
-import com.sun.tools.visualvm.charts.SimpleXYChartDescriptor;
-import com.sun.tools.visualvm.charts.SimpleXYChartSupport;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.ChartUtils;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.time.Millisecond;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.util.Date;
 
 public class GraphFrame extends JFrame {
 
-    private static final long SLEEP_TIME = 1000;
-    private SimpleXYChartSupport support;
-    private Generator generator;
+    private final JFreeChart chart;
     private long epoch;
+    private long totalRewards;
+    private TimeSeries rewardSeries;
+    private TimeSeries averageSeries;
+
 
     public GraphFrame() {
-        super("Graph");
+        super("Rewards Graph");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(400, 250);
-        setLayout(new BorderLayout());
-        createModels();
-        add(support.getChart(), BorderLayout.CENTER);
+
+        rewardSeries = new TimeSeries("Rewards");
+        averageSeries = new TimeSeries("Average Reward");
+        TimeSeriesCollection dataset = new TimeSeriesCollection();
+        dataset.addSeries(averageSeries);
+        dataset.addSeries(rewardSeries);
+
+        chart = org.jfree.chart.ChartFactory.createTimeSeriesChart("Rewards", "time", "reward", dataset, true, true, false);
+        this.add(new ChartPanel(chart), BorderLayout.CENTER);
+        XYLineAndShapeRenderer plot = (XYLineAndShapeRenderer) chart.getXYPlot().getRenderer();
+        plot.setSeriesStroke(0, new BasicStroke(2f));
+        rewardSeries.addOrUpdate(new Millisecond(new Date()), 1000);
+
         setVisible(true);
     }
 
-    private void createModels() {
-        SimpleXYChartDescriptor descriptor = SimpleXYChartDescriptor.decimal(0, 1000, 1000, 1d, true, 100000);
-
-        descriptor.addLineFillItems("Reward");
-
-        descriptor.setDetailsItems(new String[]{"Epoch #"});
-        descriptor.setChartTitle("<html><font size='+1'><b>Rewards</b></font></html>");
-        descriptor.setXAxisDescription("<html>Time</html>");
-        descriptor.setYAxisDescription("<html>Reward</html>");
-
-        support = ChartFactory.createSimpleXYChart(descriptor);
-
-        generator = new Generator(support);
-        generator.start();
-    }
-
     public void addValue(long epochReward) {
-        generator.addValue(epoch, -epochReward);
         epoch++;
+        totalRewards += epochReward;
+        Millisecond now = new Millisecond(new Date());
+        rewardSeries.addOrUpdate(now, epochReward);
+        averageSeries.addOrUpdate(now, totalRewards / epoch);
+        chart.setTitle("Epoch #" + epoch);
     }
 
-    private static class Generator extends Thread {
+    public void saveChartAsImage(String filename) throws Exception {
 
-        private SimpleXYChartSupport support;
-        private long epoch;
+        ChartUtils.saveChartAsPNG(new File(filename), chart, 3500, 1500);
 
-        public void run() {
-            while (true) {
-                try {
-                    support.updateDetails(new String[]{"" + epoch});
-                    Thread.sleep(SLEEP_TIME);
-                } catch (Exception e) {
-                    e.printStackTrace(System.err);
-                }
-            }
-        }
-
-        private Generator(SimpleXYChartSupport support) {
-            this.support = support;
-        }
-
-        public void addValue(long epoch, long epochReward) {
-            this.epoch = epoch;
-            support.addValues(System.currentTimeMillis(), new long[] {epochReward} );
-        }
     }
-
 }
