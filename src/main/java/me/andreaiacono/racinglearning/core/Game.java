@@ -46,7 +46,7 @@ public class Game {
     }
 
     public boolean isOver() {
-        return !track.isCarInsideScreen() || track.isLapCompleted() || track.isTimeOver();
+        return !track.isCarInsideScreen() || track.isTimeOver();
     }
 
     public long move(Command command) {
