@@ -71,4 +71,12 @@ public class Game {
             graphFrame.saveChartAsImage(filename);
         }
     }
+
+    public int getMoveNumber() {
+        return moveNumber;
+    }
+
+    public long getCumulativeReward() {
+        return epochReward;
+    }
 }
