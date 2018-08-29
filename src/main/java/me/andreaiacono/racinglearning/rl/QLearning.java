@@ -21,7 +21,6 @@ public class QLearning {
     private static final long SCREEN_UPDATE = 50;
     private final Game game;
 
-//    FIX SCRREEN SIZE
     public static HistoryProcessor.Configuration RACING_HP = new HistoryProcessor.Configuration(
             10,       //History length
             30,     //resize width
@@ -36,7 +35,7 @@ public class QLearning {
     public static QLConfiguration RACING_QL = new QLConfiguration(
                     123,      //Random seed
                     2500,    //Max step By epoch
-            10000000,  //Max step
+            1000000,  //Max step
                     1000000,  //Max size of experience replay
                     32,       //size of batches
                     10000,    //target update (hard)
@@ -68,14 +67,16 @@ public class QLearning {
 
         Process p = Runtime.getRuntime().exec("hostname");
         p.waitFor();
-        String hostName = IOUtils.toString(p.getInputStream()).trim();
+        String hostName = IOUtils.toString(p.getInputStream(), "UTF-8").trim();
         String filename = getNewFilename(model);
         saveRunningConfig(filename + ".config", hostName, 0, 0, "");
 
         // setups and starts training
         QLearningDiscreteConv<ScreenFrameState> dql = new QLearningDiscreteConv(mdp, RACING_NET_CONFIG, RACING_HP, RACING_QL, manager);
         long start = System.currentTimeMillis();
+
         dql.train();
+
         long elapsed = System.currentTimeMillis() - start;
         int seconds = (int) (elapsed / 1000) % 60 ;
         int minutes = (int) ((elapsed / (1000*60)) % 60);
@@ -83,8 +84,7 @@ public class QLearning {
         int days   = (int) ((elapsed / (1000*60*60*24)));
         String elapsedTime = String.format("%dd:%02dh:%02dm:%02ds", days, hours, minutes, seconds);
 
-
-        dql.getPolicy().save(filename);
+        dql.getPolicy().save(filename + ".model");
         mdp.close();
 
         game.saveChartImage(filename + ".png");
@@ -139,12 +139,12 @@ public class QLearning {
     }
 
     private String getNewFilename(String basename) {
-        long index = 0;
+        long index = 60;
         String directory = "src/main/resources/models/";
         String filename;
         while (true) {
-            filename = String.format("%s%s_%d.model", directory, basename, index);
-            if (!new File(filename).exists()) {
+            filename = String.format("%s%s_%d", directory, basename, index);
+            if (!new File(filename + ".config").exists()) {
                 break;
             }
             index++;

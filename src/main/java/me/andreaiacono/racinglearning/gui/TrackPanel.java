@@ -15,9 +15,9 @@ import java.util.Random;
 
 public class TrackPanel extends JPanel {
 
-    private static final Color CAR_COLOR = Color.RED;
+    private static final Color CAR_COLOR = new Color(255,0,255);
     public static final int CAR_STARTING_ANGLE = 0;
-    private static final int TILES_SIDE_NUMBER = 5;
+    private static final int TILES_SIDE_NUMBER = 4;
     private final int size;
 
     private boolean drawInfo;
@@ -26,7 +26,6 @@ public class TrackPanel extends JPanel {
     private BufferedImage trackImage;
     private final Car car;
     private float scale;
-    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss.SSS");
     private BufferedImage racingImage;
     private long time;
     private Stroke carHeadSize;
@@ -87,7 +86,7 @@ public class TrackPanel extends JPanel {
 //        reward += getCheckPointsReward();
 
         // being on track is a lot better than being off track
-        reward += isCarOnTrack() ? 1000 : -100;
+        reward += isCarOnTrack() ? 500 : -100;
 
 //        // the more time passes, the worse is  /// MISLEADING!
 //        long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
@@ -151,7 +150,7 @@ public class TrackPanel extends JPanel {
         imageGraphics.setColor(CAR_COLOR);
         imageGraphics.fillPolygon(drawnCar);
 
-        imageGraphics.setColor(Color.YELLOW);
+        imageGraphics.setColor(Color.WHITE);
         imageGraphics.setStroke(carHeadSize);
         imageGraphics.drawLine((int) (cx + cosAngleLeft), (int) (cy + sinAngleLeft), (int) (cx + cosAngleRight), (int) (cy + sinAngleRight));
     }
