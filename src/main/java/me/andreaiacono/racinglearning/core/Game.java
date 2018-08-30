@@ -17,7 +17,7 @@ public class Game {
     public Game(Car car, TrackPanel track, GameParameters params) {
         this.car = car;
         this.track = track;
-        this.trackDuration = params.getValueWithDefault(GameParameters.TRACK_DURATION, 1L);
+        this.trackDuration = params.getValueWithDefault(GameParameters.TRACK_DURATION, Long.MAX_VALUE);
         if (trackDuration == 0) {
             trackDuration = Long.MAX_VALUE;
         }
@@ -32,7 +32,6 @@ public class Game {
     }
 
     public void reset() {
-//        System.out.println("Epoch #" + epoch);
         epoch ++;
         if (hasGraph) {
             graphFrame.addValue(epochReward);
