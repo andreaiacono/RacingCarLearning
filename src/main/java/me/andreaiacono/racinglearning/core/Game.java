@@ -45,7 +45,7 @@ public class Game {
     }
 
     public boolean isOver() {
-        return !track.isCarInsideScreen() || track.isTimeOver();
+        return !track.isCarInsideScreen();
     }
 
     public long move(Command command) {

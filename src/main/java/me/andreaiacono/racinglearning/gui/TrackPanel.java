@@ -199,18 +199,6 @@ public class TrackPanel extends JPanel {
         return racingImage.getWidth();
     }
 
-    /**
-     * checks that every check point is reached within its time limit.
-     *
-     * @return
-     */
-    public boolean isTimeOver() {
-
-        long currentTime = System.currentTimeMillis();
-        long elapsedTime = (currentTime - startTime) / 1000;
-        return elapsedTime > 20;
-    }
-
     public int getSizeInPixel() {
         return size;
     }
