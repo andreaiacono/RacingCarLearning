@@ -21,7 +21,7 @@ public class TrackPanel extends JPanel {
 //    private static final int BIG_CAR_WIDTH = SMALL_CAR_WIDTH * 2;
     private static final Color CAR_COLOR = Color.RED;
     private static final Font INFO_FONT = new Font("Arial", Font.PLAIN, 10);
-    private static final Point SMALL_CAR_STARTING_POSITION = new Point(20, 4);
+    private static final Point SMALL_CAR_STARTING_POSITION = new Point(10, 2);
 //    private static final Point BIG_CAR_STARTING_POSITION = new Point(204, 25);
     public static final int CAR_STARTING_ANGLE = 0;
     private final int size;
