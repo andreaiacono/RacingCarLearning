@@ -14,7 +14,6 @@ public class RacingMDP implements MDP<ScreenFrameState, Integer, CarActionSpace>
     private CarActionSpace carActionSpace = new CarActionSpace();
     private Game game;
     private byte[] screenBuffer;
-    private long epoch = 1;
 
     public RacingMDP(Game game) {
         this.game = game;
@@ -39,7 +38,6 @@ public class RacingMDP implements MDP<ScreenFrameState, Integer, CarActionSpace>
     @Override
     public ScreenFrameState reset() {
         game.reset();
-        epoch++;
         screenBuffer = game.getScreenFrame();
         return new ScreenFrameState(screenBuffer);
     }
@@ -52,7 +50,7 @@ public class RacingMDP implements MDP<ScreenFrameState, Integer, CarActionSpace>
     public StepReply<ScreenFrameState> step(Integer action) {
         Command command = CommandsTranslator.getCommandFromInteger(action);
         long reward = game.move(command);
-        System.out.print("\rEpoch #" + epoch + " - Executed command #" + game.getMoveNumber() + " [" + command + "] - Reward: " + reward + " - Cumulative Reward: " + game.getCumulativeReward() + "\t\t\t\t\t\t");
+        System.out.print("\rExecuted " + command + ": " + reward + " - ");
         return new StepReply(new ScreenFrameState(screenBuffer), reward, game.isOver(), null);
     }
 

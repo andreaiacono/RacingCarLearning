@@ -8,4 +8,8 @@ TODO:
 - add side skid effect
 - instead of images, give RL a state (position + direction + speed)
 
-rewards: onTrack, checkpoints, speed, laptime!  
+rewards: onTrack, checkpoints, speed, laptime!
+
+NEW IDEA: create a random labyrinth and make RL auto rewards (penalties); 
+then try it on new random labyrinths. Use a many layers NN?  
+  

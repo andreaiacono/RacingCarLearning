@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.awt.image.BufferedImage.TYPE_3BYTE_BGR;
@@ -130,7 +131,7 @@ public class RandomRaceTrack {
             } while (startX != currentX || startY != currentY);
 
             long count = Stream.of(tiles).flatMap(Stream::of).filter(tile -> tile != null).count();
-            isTooSmall = count < (size * size) / 2;
+            isTooSmall = count < (size * size) / 3;
 
         } while (isUncomplete || isTooSmall);
 

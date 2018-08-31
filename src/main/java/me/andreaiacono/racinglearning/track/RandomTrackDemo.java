@@ -6,18 +6,17 @@ import java.util.Random;
 
 public class RandomTrackDemo extends JFrame {
 
-
     public RandomTrackDemo() {
 
         super("Random Track Demo");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        RandomTrackPanel panel = new RandomTrackPanel(8, 160, 8);
+        RandomTrackPanel panel = new RandomTrackPanel(8, 200, 5);
         add(panel, BorderLayout.CENTER);
         JButton button = new JButton("New Track");
         button.addActionListener(event -> panel.newTrack(new Random().nextInt()));
         add(button, BorderLayout.PAGE_END);
-        setSize(200, 250);
+        setSize(100, 150);
         setVisible(true);
     }
 
@@ -27,8 +26,6 @@ public class RandomTrackDemo extends JFrame {
 }
 
 class RandomTrackPanel extends JPanel {
-
-    private final int scale = 1;
 
     private Image randomTrack;
     private int size;
@@ -43,7 +40,7 @@ class RandomTrackPanel extends JPanel {
 
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
-        graphics.drawImage(randomTrack.getScaledInstance((int) (size * scale), (int) (size * scale), Image.SCALE_FAST), 0, 0, size*scale, size*scale, null);
+        graphics.drawImage(randomTrack, 0, 0, size, size, null);
     }
 
     public void newTrack(int seed) {

@@ -1,7 +1,6 @@
 package me.andreaiacono.racinglearning.rl;
 
 import me.andreaiacono.racinglearning.core.Game;
-import org.apache.commons.io.IOUtils;
 import org.deeplearning4j.rl4j.learning.HistoryProcessor;
 import org.deeplearning4j.rl4j.learning.sync.qlearning.QLearning.QLConfiguration;
 import org.deeplearning4j.rl4j.learning.sync.qlearning.discrete.QLearningDiscreteConv;
@@ -21,10 +20,11 @@ public class QLearning {
     private static final long SCREEN_UPDATE = 50;
     private final Game game;
 
+//    FIX SCRREEN SIZE
     public static HistoryProcessor.Configuration RACING_HP = new HistoryProcessor.Configuration(
             10,       //History length
-            30,     //resize width
-            30,     //resize height
+            80,     //resize width
+            80,     //resize height
             20,      //crop width
             20,      //crop height
             0,       //cropping x offset
@@ -35,21 +35,21 @@ public class QLearning {
     public static QLConfiguration RACING_QL = new QLConfiguration(
                     123,      //Random seed
                     2500,    //Max step By epoch
-            1000000,  //Max step
+                    45000000,  //Max step
                     1000000,  //Max size of experience replay
                     32,       //size of batches
                     10000,    //target update (hard)
                     500,      //num step noop warmup
-                    0.9,      //reward scaling
-                    0.9,      //gamma
+                    0.8,      //reward scaling
+                    0.1,      //gamma
                     100.0,    //td-error clipping
-                    0.1f,     //min epsilon
+                    0.2f,     //min epsilon
                     100000,   //num step for eps greedy anneal
                     true      //double-dqn
             );
 
     public static DQNFactoryStdConv.Configuration RACING_NET_CONFIG = new DQNFactoryStdConv.Configuration(
-            0.9,    //learning rate
+            0.5,    //learning rate
             0.000,              //l2 regularization
             null,
             null
@@ -65,18 +65,10 @@ public class QLearning {
         DataManager manager = new DataManager(true);
         RacingMDP mdp = new RacingMDP(game);
 
-        Process p = Runtime.getRuntime().exec("hostname");
-        p.waitFor();
-        String hostName = IOUtils.toString(p.getInputStream(), "UTF-8").trim();
-        String filename = getNewFilename(model);
-        saveRunningConfig(filename + ".config", hostName, 0, 0, "");
-
         // setups and starts training
         QLearningDiscreteConv<ScreenFrameState> dql = new QLearningDiscreteConv(mdp, RACING_NET_CONFIG, RACING_HP, RACING_QL, manager);
         long start = System.currentTimeMillis();
-
         dql.train();
-
         long elapsed = System.currentTimeMillis() - start;
         int seconds = (int) (elapsed / 1000) % 60 ;
         int minutes = (int) ((elapsed / (1000*60)) % 60);
@@ -84,24 +76,24 @@ public class QLearning {
         int days   = (int) ((elapsed / (1000*60*60*24)));
         String elapsedTime = String.format("%dd:%02dh:%02dm:%02ds", days, hours, minutes, seconds);
 
-        dql.getPolicy().save(filename + ".model");
+        String filename = getNewFilename(model);
+        dql.getPolicy().save(filename);
         mdp.close();
 
         game.saveChartImage(filename + ".png");
-        saveRunningConfig(filename + ".config", hostName, dql.getEpochCounter(), start, elapsedTime);
+        saveRunningConfig(filename + ".config", dql.getEpochCounter(), start, elapsedTime);
     }
 
-    private void saveRunningConfig(String filename, String hostName, int epochCounter, long start, String elapsedTime) throws Exception {
+    private void saveRunningConfig(String filename, int epochCounter, long start, String elapsedTime) throws Exception {
         try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(filename))) {
             writer.append("RL4J Configuration values\n");
 
-            if (epochCounter > 0) {
-                writer.append("\nOperating System: " + System.getProperty("os.name") + " [" + hostName + "]");
-                writer.append("\nStart Time: " + new Date(start).toString());
-                writer.append("\nElapsed Time: " + elapsedTime);
-                writer.append("\nEpochs: " + epochCounter);
-                writer.append("\nScreen size (in pixel): " + game.track.getSizeInPixel());
-            }
+            writer.append("\nOperating System: " + System.getProperty("os.name"));
+            writer.append("\nStart Time: " + new Date(start).toString());
+            writer.append("\nElapsed Time: " + elapsedTime);
+            writer.append("\nEpochs: " + epochCounter);
+            writer.append("\nScreen size (in pixel): " + game.track.getSizeInPixel());
+
             writer.append("\n\nHISTORY PROCESSOR:\n");
             writer.append("\tHistory Length: " + RACING_HP.getHistoryLength() + "\n");
             writer.append("\tResize Width: " + RACING_HP.getRescaledWidth() + "\n");
@@ -130,21 +122,16 @@ public class QLearning {
             writer.append("\nNET CONFIGURATION:\n");
             writer.append("\tLearning Rate: " + RACING_NET_CONFIG.getLearningRate() + "\n");
             writer.append("\tL2 Regularization: " + RACING_NET_CONFIG.getL2() + "\n");
-
-            if (epochCounter == 0) {
-                writer.append("\nEXECUTION NOT TERMINATED\n");
-            }
-
         }
     }
 
     private String getNewFilename(String basename) {
-        long index = 60;
+        long index = 0;
         String directory = "src/main/resources/models/";
         String filename;
         while (true) {
-            filename = String.format("%s%s_%d", directory, basename, index);
-            if (!new File(filename + ".config").exists()) {
+            filename = String.format("%s%s_%d.model", directory, basename, index);
+            if (!new File(filename).exists()) {
                 break;
             }
             index++;

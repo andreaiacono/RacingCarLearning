@@ -46,10 +46,9 @@ public class GraphFrame extends JFrame {
         epoch++;
         totalRewards += epochReward;
         Millisecond now = new Millisecond(new Date());
-        rewardSeries.addOrUpdate(now, epochReward);
-        int avg = (int) (totalRewards / epoch);
-        averageSeries.addOrUpdate(now, avg);
-        chart.setTitle("Epoch #" + epoch + " - Avg Reward: " + avg);
+        rewardSeries.addOrUpdate(now, Math.max(epochReward, -50000));
+        averageSeries.addOrUpdate(now, totalRewards / epoch);
+        chart.setTitle("Epoch #" + epoch);
     }
 
     public void saveChartAsImage(String filename) throws Exception {

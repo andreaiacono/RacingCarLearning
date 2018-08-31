@@ -12,7 +12,7 @@ public class GameParameters {
     public final static String DRAW_INFO_PARAM = "i";
     public final static String USE_BW_PARAM = "b";
     public static final String MODEL_NAME_PARAM = "m";
-    public static final String SMALL_PARAM = "s";
+    public static final String SIZE_PARAM = "s";
 
     public enum Type {
         HUMAN, MACHINE_LEARN, MACHINE_RACE;
@@ -25,7 +25,7 @@ public class GameParameters {
         options.addOption(DRAW_INFO_PARAM, false, "Draws info on the screen");
         options.addOption(USE_BW_PARAM, false, "Draws the screen in Black&White");
         options.addOption(MODEL_NAME_PARAM, true, "The filename of the model to load/save");
-        options.addOption(SMALL_PARAM, false, "Reduce the size of the screen [useful for speedup learning]");
+        options.addOption(SIZE_PARAM, true, "The size in pixel of the screen");
 
         CommandLineParser parser = new DefaultParser();
         cmd = parser.parse( options, args);
@@ -34,6 +34,10 @@ public class GameParameters {
             System.out.println("No type argument specified. Argument -t can be [HUMAN, MACHINE_LEARN, MACHINE_RACE]");
             System.exit(-1);
         }
+    }
+
+    public boolean isProvided(String paramName) {
+        return cmd.hasOption(paramName);
     }
 
     public String getValue(String paramName) {
