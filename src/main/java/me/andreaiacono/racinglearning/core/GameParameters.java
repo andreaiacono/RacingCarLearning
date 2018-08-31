@@ -12,9 +12,7 @@ public class GameParameters {
     public final static String DRAW_INFO_PARAM = "i";
     public final static String USE_BW_PARAM = "b";
     public static final String MODEL_NAME_PARAM = "m";
-    public static final String SIZE_PARAM = "s";
-    public static final String TRACK_DURATION = "d";
-    public static final String SCALE_PARAM = "c";
+    public static final String SMALL_PARAM = "s";
 
     public enum Type {
         HUMAN, MACHINE_LEARN, MACHINE_RACE;
@@ -27,9 +25,7 @@ public class GameParameters {
         options.addOption(DRAW_INFO_PARAM, false, "Draws info on the screen");
         options.addOption(USE_BW_PARAM, false, "Draws the screen in Black&White");
         options.addOption(MODEL_NAME_PARAM, true, "The filename of the model to load/save");
-        options.addOption(SIZE_PARAM, true, "The size in pixel of the screen");
-        options.addOption(SCALE_PARAM, true, "The scale of the shown track");
-        options.addOption(TRACK_DURATION, true, "The number of epochs after which the track is changed");
+        options.addOption(SMALL_PARAM, false, "Reduce the size of the screen [useful for speedup learning]");
 
         CommandLineParser parser = new DefaultParser();
         cmd = parser.parse( options, args);
@@ -40,15 +36,8 @@ public class GameParameters {
         }
     }
 
-    public boolean isProvided(String paramName) {
-        return cmd.hasOption(paramName);
-    }
-
     public String getValue(String paramName) {
         return cmd.getOptionValue(paramName);
-    }
-    public Long getValueWithDefault(String paramName, Long def) {
-        return isProvided(paramName) ? Long.valueOf(cmd.getOptionValue(paramName)) : def;
     }
 
     public boolean getBool(String paramName) {
