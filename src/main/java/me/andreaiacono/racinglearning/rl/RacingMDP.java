@@ -41,6 +41,7 @@ public class RacingMDP implements MDP<ScreenFrameState, Integer, CarActionSpace>
         game.reset();
         epoch++;
         screenBuffer = game.getScreenFrame();
+        System.out.println();
         return new ScreenFrameState(screenBuffer);
     }
 
