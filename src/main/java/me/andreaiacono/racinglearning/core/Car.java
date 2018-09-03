@@ -7,8 +7,6 @@ import static me.andreaiacono.racinglearning.gui.TrackPanel.CAR_STARTING_ANGLE;
 public class Car {
 
     private static final double AUTO_SLOW_DOWN = 0.2;
-    public static final int BIG_MAX_SPEED = 7;
-    public static final int SMALL_MAX_SPEED = 4;
     private static final int MAX_STEERING_ANGLE = 45;
     private boolean isOnTrack;
 

@@ -10,12 +10,12 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
-import java.text.SimpleDateFormat;
 import java.util.Random;
 
 public class TrackPanel extends JPanel {
 
-    private static final Color CAR_COLOR = new Color(255,0,255);
+    private static final Color CAR_BODY_COLOR = new Color(255, 0, 255);
+    private static final Color CAR_HEAD_COLOR = Color.WHITE;
     public static final int CAR_STARTING_ANGLE = 0;
     private static final int TILES_SIDE_NUMBER = 4;
     private final int size;
@@ -28,9 +28,7 @@ public class TrackPanel extends JPanel {
     private float scale;
     private BufferedImage racingImage;
     private long time;
-    private Stroke carHeadSize;
-    private long startTime;
-    private double carSize;
+    private Stroke carStrokeSize;
     private final static Random random = new Random(123);
 
     public TrackPanel(Car car, DrivingKeyListener listener, int size, GameParameters gameParameters, float scale) {
@@ -43,12 +41,11 @@ public class TrackPanel extends JPanel {
         setFocusable(true);
         addKeyListener(listener);
 
-        Point startingPosition = new Point(size / 2, (size / TILES_SIDE_NUMBER)/2);
+        Point startingPosition = new Point(size / 2, (size / TILES_SIDE_NUMBER) / 2);
         car.setStartingPosition(startingPosition);
-        car.setMaxSpeed(Car.SMALL_MAX_SPEED);
+        car.setMaxSpeed(size / 10);
 
-        carSize = size / 25;
-        carHeadSize = new BasicStroke(size / 80);
+        carStrokeSize = new BasicStroke(size / 20);
 
         createNew();
     }
@@ -59,7 +56,6 @@ public class TrackPanel extends JPanel {
         racingImage = new BufferedImage(trackImage.getWidth(), trackImage.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
 
         car.reset();
-        startTime = System.currentTimeMillis();
     }
 
     /**
@@ -86,7 +82,7 @@ public class TrackPanel extends JPanel {
 //        reward += getCheckPointsReward();
 
         // being on track is a lot better than being off track
-        reward += isCarOnTrack() ? 500 : -100;
+        reward += isCarOnTrack() ? 100 : -100;
 
 //        // the more time passes, the worse is  /// MISLEADING!
 //        long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
@@ -125,34 +121,21 @@ public class TrackPanel extends JPanel {
         // computes and draws the car
         double cx = car.getX();
         double cy = car.getY();
-        double angleLeft = car.getDirection() - carSize;
-        double angleRight = car.getDirection() + carSize;
+        double carTailDirection = (car.getDirection() - 180) % 360;
+        double carLength = Math.abs(car.getVelocity().speed);
 
-        double carSpeedLength = car.getVelocity().speed * 2;
+        double cosAngle = Math.cos(Math.toRadians(carTailDirection)) * carLength;
+        double sinAngle = Math.sin(Math.toRadians(carTailDirection)) * carLength;
 
-        double cosAngleLeft = Math.cos(Math.toRadians(angleLeft)) * carSpeedLength;
-        double sinAngleLeft = Math.sin(Math.toRadians(angleLeft)) * carSpeedLength;
-        double cosAngleRight = Math.cos(Math.toRadians(angleRight)) * carSpeedLength;
-        double sinAngleRight = Math.sin(Math.toRadians(angleRight)) * carSpeedLength;
-        double cosAngleBackLeft = Math.cos(Math.toRadians((angleLeft - 180) % 360)) * carSpeedLength;
-        double sinAngleBackLeft = Math.sin(Math.toRadians((angleLeft - 180) % 360)) * carSpeedLength;
-        double cosAngleBackRight = Math.cos(Math.toRadians((angleRight - 180) % 360)) * carSpeedLength;
-        double sinAngleBackRight = Math.sin(Math.toRadians((angleRight - 180) % 360)) * carSpeedLength;
+        imageGraphics.setStroke(carStrokeSize);
 
-        Polygon drawnCar = new Polygon();
-        Point firstPoint = new Point((int) (cx + cosAngleLeft), (int) (cy + sinAngleLeft));
-        drawnCar.addPoint(firstPoint.x, firstPoint.y);
-        drawnCar.addPoint((int) (cx + cosAngleRight), (int) (cy + sinAngleRight));
-        drawnCar.addPoint((int) (cx + cosAngleBackLeft), (int) (cy + sinAngleBackLeft));
-        drawnCar.addPoint((int) (cx + cosAngleBackRight), (int) (cy + sinAngleBackRight));
-        drawnCar.addPoint(firstPoint.x, firstPoint.y);
+        // draws the car body
+        imageGraphics.setColor(CAR_BODY_COLOR);
+        imageGraphics.drawLine((int) cx, (int) cy, (int) (cx + cosAngle), (int) (cy + sinAngle));
 
-        imageGraphics.setColor(CAR_COLOR);
-        imageGraphics.fillPolygon(drawnCar);
-
-        imageGraphics.setColor(Color.WHITE);
-        imageGraphics.setStroke(carHeadSize);
-        imageGraphics.drawLine((int) (cx + cosAngleLeft), (int) (cy + sinAngleLeft), (int) (cx + cosAngleRight), (int) (cy + sinAngleRight));
+        // draws the car head
+        imageGraphics.setColor(CAR_HEAD_COLOR);
+        imageGraphics.drawLine((int) cx, (int) cy, (int) cx, (int) cy);
     }
 
     private String addZeroIfNeeded(long value) {
