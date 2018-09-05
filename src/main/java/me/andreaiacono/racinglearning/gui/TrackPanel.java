@@ -82,7 +82,7 @@ public class TrackPanel extends JPanel {
 //        reward += getCheckPointsReward();
 
         // being on track is a lot better than being off track
-        reward += isCarOnTrack() ? 100 : -100;
+        reward += isCarOnTrack() ? 500 : -100;
 
 //        // the more time passes, the worse is  /// MISLEADING!
 //        long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
@@ -122,7 +122,7 @@ public class TrackPanel extends JPanel {
         double cx = car.getX();
         double cy = car.getY();
         double carTailDirection = (car.getDirection() - 180) % 360;
-        double carLength = Math.abs(car.getVelocity().speed);
+        double carLength = Math.abs(car.getVelocity().speed*1.5);
 
         double cosAngle = Math.cos(Math.toRadians(carTailDirection)) * carLength;
         double sinAngle = Math.sin(Math.toRadians(carTailDirection)) * carLength;
@@ -166,12 +166,7 @@ public class TrackPanel extends JPanel {
     }
 
     public void updateCircuit() {
-        updateCircuit(-1);
-    }
-
-    public void updateCircuit(long raceStartTime) {
-        this.time = System.currentTimeMillis() - raceStartTime;
-        repaint();
+        paintImmediately(0, 0, getWidth(), getHeight());
     }
 
     public int getScreenHeight() {
