@@ -47,8 +47,9 @@ public class GameParameters {
     public String getValue(String paramName) {
         return cmd.getOptionValue(paramName);
     }
-    public Long getValueWithDefault(String paramName, Long def) {
-        return isProvided(paramName) ? Long.valueOf(cmd.getOptionValue(paramName)) : def;
+
+    public int getValueWithDefault(String paramName, int defaultValue) {
+        return isProvided(paramName) ? Integer.valueOf(cmd.getOptionValue(paramName)) : defaultValue;
     }
 
     public boolean getBool(String paramName) {

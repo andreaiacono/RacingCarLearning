@@ -16,40 +16,42 @@ import java.nio.file.Paths;
 import java.util.Date;
 import java.util.logging.Logger;
 
+import static me.andreaiacono.racinglearning.misc.Constants.SCREEN_SIZE;
+
 public class QLearning {
 
     private static final long SCREEN_UPDATE = 50;
     private final Game game;
 
     public static HistoryProcessor.Configuration RACING_HP = new HistoryProcessor.Configuration(
-            10,       //History length
-            30,     //resize width
-            30,     //resize height
-            20,      //crop width
-            20,      //crop height
-            0,       //cropping x offset
-            0,       //cropping y offset
-            4        //skip mod (one frame is picked every x
+            10,             //History length
+            SCREEN_SIZE,    //resize width
+            SCREEN_SIZE,    //resize height
+            SCREEN_SIZE,    //crop width
+            SCREEN_SIZE,    //crop height
+            0,              //cropping x offset
+            0,              //cropping y offset
+            4               //skip mod (one frame is picked every x
     );
 
     public static QLConfiguration RACING_QL = new QLConfiguration(
                     123,      //Random seed
                     2500,    //Max step By epoch
-            1000000,  //Max step
+                    3000000,  //Max step
                     1000000,  //Max size of experience replay
                     32,       //size of batches
                     10000,    //target update (hard)
                     500,      //num step noop warmup
-                    0.9,      //reward scaling
-                    0.9,      //gamma
+                    0.0001,      //reward scaling
+                    0.0001,      //gamma
                     100.0,    //td-error clipping
-                    0.1f,     //min epsilon
+                    0.99f,     //min epsilon
                     100000,   //num step for eps greedy anneal
                     true      //double-dqn
             );
 
     public static DQNFactoryStdConv.Configuration RACING_NET_CONFIG = new DQNFactoryStdConv.Configuration(
-            0.9,    //learning rate
+            0.6,    //learning rate
             0.000,              //l2 regularization
             null,
             null
@@ -198,7 +200,7 @@ public class QLearning {
 //            car.updatePosition();
 //
 //            // refreshes the screen with the new position
-//            circuit.updateCircuit();
+//            circuit.updateTrack();
 //
 //            // wait for the next screen updatePosition
 //            long elapsedTime = System.currentTimeMillis() - startTime;

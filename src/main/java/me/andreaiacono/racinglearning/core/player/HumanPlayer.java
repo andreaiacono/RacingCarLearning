@@ -37,7 +37,7 @@ public class HumanPlayer {
             car.updatePosition();
 
             // refreshes the screen with the new position
-            circuit.updateCircuit();
+            circuit.updateTrack();
 
             car.applyCommand(listener.getCommand());
             if (!circuit.isCarInsideScreen()) {

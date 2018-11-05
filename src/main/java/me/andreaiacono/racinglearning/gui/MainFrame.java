@@ -18,8 +18,8 @@ public class MainFrame extends JFrame {
         super("Racing Car - " + params.getValue(GameParameters.TYPE_PARAM));
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        int size = params.isProvided(GameParameters.SIZE_PARAM) ?
-                Integer.parseInt(params.getValue(GameParameters.SIZE_PARAM))
+        int size = params.isProvided(GameParameters.SIZE_PARAM)
+                ? Integer.parseInt(params.getValue(GameParameters.SIZE_PARAM))
                 : 100;
 
         float scale = params.isProvided(GameParameters.SCALE_PARAM) ?

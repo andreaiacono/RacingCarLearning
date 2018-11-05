@@ -26,10 +26,10 @@ public class TrackPanel extends JPanel {
     private BufferedImage trackImage;
     private final Car car;
     private float scale;
-    private BufferedImage racingImage;
+    private BufferedImage trackRaceImage;
     private long time;
     private Stroke carStrokeSize;
-    private final static Random random = new Random(123);
+    private final static Random random = new Random(1520);
 
     public TrackPanel(Car car, DrivingKeyListener listener, int size, GameParameters gameParameters, float scale) {
 
@@ -52,8 +52,11 @@ public class TrackPanel extends JPanel {
 
 
     public void createNew() {
+        // the image of the track (used for checking if the car is on the track or not)
         trackImage = new RandomRaceTrack().getRandomTrack(size, TILES_SIDE_NUMBER, random.nextInt());
-        racingImage = new BufferedImage(trackImage.getWidth(), trackImage.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+
+        // the image of the track AND the car (based on trackImage)
+        trackRaceImage = new BufferedImage(trackImage.getWidth(), trackImage.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
 
         car.reset();
     }
@@ -68,21 +71,21 @@ public class TrackPanel extends JPanel {
     public long getReward() {
 
         if (!isCarInsideScreen()) {
-            return -10000;
+            return -100;
         }
 
         // the faster the car goes, the better
         int reward = (int) car.getVelocity().speed;
 
-        if (car.getVelocity().speed == 0) {
-            return -100;
-        }
+//        if (car.getVelocity().speed == 0) {
+//            return 0;
+//        }
 
 //        // the more checkpoints passed in order, the more reward gained
 //        reward += getCheckPointsReward();
 
         // being on track is a lot better than being off track
-        reward += isCarOnTrack() ? 500 : -100;
+        reward += isCarOnTrack() ? 10 : -20;
 
 //        // the more time passes, the worse is  /// MISLEADING!
 //        long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
@@ -94,12 +97,7 @@ public class TrackPanel extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // creates the image where to draw
-        Graphics2D imageGraphics = (Graphics2D) racingImage.getGraphics();
-
-        // draws the track and the car
-        imageGraphics.drawImage(trackImage, 0, 0, null);
-        drawCar(imageGraphics);
+        // the trackRaceImage is updated in update
 
         // draws info
         if (drawInfo) {
@@ -113,8 +111,9 @@ public class TrackPanel extends JPanel {
         }
 
         // draws the image to the panel
-        g.drawImage(racingImage.getScaledInstance((int) (size * scale), (int) (size * scale), Image.SCALE_FAST), 0, 0, null);
+        g.drawImage(trackRaceImage.getScaledInstance((int) (size * scale), (int) (size * scale), Image.SCALE_FAST), 0, 0, null);
     }
+
 
     public void drawCar(Graphics2D imageGraphics) {
 
@@ -143,7 +142,7 @@ public class TrackPanel extends JPanel {
     }
 
     public byte[] getCurrentFrame() {
-        WritableRaster raster = racingImage.getRaster();
+        WritableRaster raster = trackRaceImage.getRaster();
         DataBufferByte buffer = (DataBufferByte) raster.getDataBuffer();
         return buffer.getData();
     }
@@ -165,16 +164,24 @@ public class TrackPanel extends JPanel {
         return red == 0 && green == 0 && blue == 0;
     }
 
-    public void updateCircuit() {
+    public void updateTrack() {
+
+        // creates the image where to draw
+        Graphics2D imageGraphics = (Graphics2D) trackRaceImage.getGraphics();
+
+        // draws the track and the car
+        imageGraphics.drawImage(trackImage, 0, 0, null);
+        drawCar(imageGraphics);
+
         paintImmediately(0, 0, getWidth(), getHeight());
     }
 
     public int getScreenHeight() {
-        return racingImage.getHeight();
+        return trackRaceImage.getHeight();
     }
 
     public int getScreenWidth() {
-        return racingImage.getWidth();
+        return trackRaceImage.getWidth();
     }
 
     public int getSizeInPixel() {

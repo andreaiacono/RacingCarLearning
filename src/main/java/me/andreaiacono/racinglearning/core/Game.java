@@ -5,9 +5,10 @@ import me.andreaiacono.racinglearning.gui.TrackPanel;
 
 public class Game {
 
-    private Long trackDuration;
+    private int trackDuration;
     private int epoch;
-    private int moveNumber;
+    private int cumulativeMovesNumber;
+    private int movesNumber;
     private long epochReward;
     public final Car car;
     public final TrackPanel track;
@@ -17,9 +18,9 @@ public class Game {
     public Game(Car car, TrackPanel track, GameParameters params) {
         this.car = car;
         this.track = track;
-        this.trackDuration = params.getValueWithDefault(GameParameters.TRACK_DURATION, Long.MAX_VALUE);
+        this.trackDuration = params.getValueWithDefault(GameParameters.TRACK_DURATION, Integer.MAX_VALUE);
         if (trackDuration == 0) {
-            trackDuration = Long.MAX_VALUE;
+            trackDuration = Integer.MAX_VALUE;
         }
         hasGraph = params.getValue(GameParameters.TYPE_PARAM).equals(GameParameters.Type.MACHINE_LEARN.toString());
         if (hasGraph) {
@@ -34,10 +35,10 @@ public class Game {
     public void reset() {
         epoch ++;
         if (hasGraph) {
-            graphFrame.addValue(epochReward);
+            graphFrame.addValue(epochReward, movesNumber);
             epochReward = 0;
         }
-        moveNumber = 0;
+        movesNumber = 0;
         car.reset();
         if (epoch % trackDuration == 0) {
             track.createNew();
@@ -50,7 +51,8 @@ public class Game {
 
     public long move(Command command) {
 
-        moveNumber++;
+        movesNumber++;
+        cumulativeMovesNumber++;
         car.applyCommand(command);
 
         // updates the position of the car
@@ -58,7 +60,7 @@ public class Game {
         car.updatePosition();
 
         // refreshes the screen with the new position
-        track.updateCircuit();
+        track.updateTrack();
 
         long reward = track.getReward();
         epochReward += reward;
@@ -71,11 +73,15 @@ public class Game {
         }
     }
 
-    public int getMoveNumber() {
-        return moveNumber;
+    public int getMovesNumber() {
+        return movesNumber;
     }
 
     public long getCumulativeReward() {
         return epochReward;
+    }
+
+    public int getCumulativeMovesNumber() {
+        return cumulativeMovesNumber;
     }
 }
