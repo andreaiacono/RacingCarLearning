@@ -14,7 +14,7 @@ import java.util.Random;
 
 public class TrackPanel extends JPanel {
 
-    private static final Color CAR_BODY_COLOR = new Color(255, 0, 255);
+    private static final Color CAR_BODY_COLOR = new Color(255, 180, 255);
     private static final Color CAR_HEAD_COLOR = Color.WHITE;
     public static final int CAR_STARTING_ANGLE = 0;
     private static final int TILES_SIDE_NUMBER = 4;
@@ -43,7 +43,7 @@ public class TrackPanel extends JPanel {
 
         Point startingPosition = new Point(size / 2, (size / TILES_SIDE_NUMBER) / 2);
         car.setStartingPosition(startingPosition);
-        car.setMaxSpeed(size / 10);
+        car.setMaxSpeed(size / 30);
 
         carStrokeSize = new BasicStroke(size / 20);
 
@@ -71,7 +71,7 @@ public class TrackPanel extends JPanel {
     public long getReward() {
 
         if (!isCarInsideScreen()) {
-            return -100;
+            return -500;
         }
 
         // the faster the car goes, the better
@@ -85,7 +85,7 @@ public class TrackPanel extends JPanel {
 //        reward += getCheckPointsReward();
 
         // being on track is a lot better than being off track
-        reward += isCarOnTrack() ? 10 : -20;
+        reward += isCarOnTrack() ? 1 : -2;
 
 //        // the more time passes, the worse is  /// MISLEADING!
 //        long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
@@ -121,7 +121,8 @@ public class TrackPanel extends JPanel {
         double cx = car.getX();
         double cy = car.getY();
         double carTailDirection = (car.getDirection() - 180) % 360;
-        double carLength = Math.abs(car.getVelocity().speed*1.5);
+        double carLength = Math.abs(size / 15);
+//        double carLength = Math.abs(car.getVelocity().speed*1.5);
 
         double cosAngle = Math.cos(Math.toRadians(carTailDirection)) * carLength;
         double sinAngle = Math.sin(Math.toRadians(carTailDirection)) * carLength;
@@ -130,11 +131,11 @@ public class TrackPanel extends JPanel {
 
         // draws the car body
         imageGraphics.setColor(CAR_BODY_COLOR);
-        imageGraphics.drawLine((int) cx, (int) cy, (int) (cx + cosAngle), (int) (cy + sinAngle));
+        imageGraphics.drawLine((int) cx, (int) cy, (int) (cx + cosAngle*1.01), (int) (cy + sinAngle*1.01));
 
-        // draws the car head
-        imageGraphics.setColor(CAR_HEAD_COLOR);
-        imageGraphics.drawLine((int) cx, (int) cy, (int) cx, (int) cy);
+//        // draws the car head
+//        imageGraphics.setColor(CAR_HEAD_COLOR);
+//        imageGraphics.drawLine((int) cx, (int) cy, (int) cx, (int) cy);
     }
 
     private String addZeroIfNeeded(long value) {
@@ -173,7 +174,8 @@ public class TrackPanel extends JPanel {
         imageGraphics.drawImage(trackImage, 0, 0, null);
         drawCar(imageGraphics);
 
-        paintImmediately(0, 0, getWidth(), getHeight());
+        repaint();
+        //paintImmediately(0, 0, getWidth(), getHeight());
     }
 
     public int getScreenHeight() {

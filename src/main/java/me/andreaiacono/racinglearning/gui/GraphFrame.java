@@ -54,8 +54,6 @@ public class GraphFrame extends JFrame {
         plot.setDataset(1, lengthDataset);
         plot.setRangeAxis(1, lengthRangeAxis);
         plot.mapDatasetToRangeAxis(1, 1);
-
-
         plot.setRenderer(1, lengthRenderer);
         ChartUtils.applyCurrentTheme(chart);
 
@@ -77,7 +75,7 @@ public class GraphFrame extends JFrame {
 
     public void saveChartAsImage(String filename) throws Exception {
 
-        ChartUtils.saveChartAsPNG(new File(filename), chart, 3500, 1500);
+        ChartUtils.saveChartAsPNG(new File(filename), chart, 5000, 3000);
 
     }
 }
