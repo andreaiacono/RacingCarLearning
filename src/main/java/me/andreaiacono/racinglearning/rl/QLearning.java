@@ -31,7 +31,7 @@ public class QLearning {
             SCREEN_SIZE,    //crop height
             0,              //cropping x offset
             0,              //cropping y offset
-            4               //skip mod (one frame is picked every x
+            2               //skip mod (one frame is picked every x
     );
 
     public static QLConfiguration RACING_QL = new QLConfiguration(
