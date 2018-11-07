@@ -31,21 +31,21 @@ public class QLearning {
             SCREEN_SIZE,    //crop height
             0,              //cropping x offset
             0,              //cropping y offset
-            2               //skip mod (one frame is picked every x
+            6               //skip mod (one frame is picked every x
     );
 
     public static QLConfiguration RACING_QL = new QLConfiguration(
                     123,      //Random seed
-                    2500,    //Max step By epoch
-                    3000000,  //Max step
+                    1200,    //Max step By epoch
+                    6000000,  //Max step
                     1000000,  //Max size of experience replay
                     32,       //size of batches
                     10000,    //target update (hard)
                     500,      //num step noop warmup
-                    0.0001,      //reward scaling
-                    0.0001,      //gamma
+                    0.1,      //reward scaling
+                    0.1,      //gamma
                     100.0,    //td-error clipping
-                    0.99f,     //min epsilon
+                    0.2f,     //min epsilon
                     100000,   //num step for eps greedy anneal
                     true      //double-dqn
             );

@@ -9,7 +9,7 @@ public class Game {
     private int epoch;
     private int cumulativeMovesNumber;
     private int movesNumber;
-    private long epochReward;
+    private double epochReward;
     public final Car car;
     public final TrackPanel track;
     private GraphFrame graphFrame;
@@ -49,7 +49,7 @@ public class Game {
         return !track.isCarInsideScreen();
     }
 
-    public long move(Command command) {
+    public double move(Command command) {
 
         movesNumber++;
         cumulativeMovesNumber++;
@@ -62,7 +62,7 @@ public class Game {
         // refreshes the screen with the new position
         track.updateTrack();
 
-        long reward = track.getReward();
+        double reward = track.getReward();
         epochReward += reward;
         return reward;
     }
@@ -77,7 +77,7 @@ public class Game {
         return movesNumber;
     }
 
-    public long getCumulativeReward() {
+    public double getCumulativeReward() {
         return epochReward;
     }
 

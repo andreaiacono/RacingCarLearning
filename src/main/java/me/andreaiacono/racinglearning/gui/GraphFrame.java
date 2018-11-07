@@ -20,7 +20,7 @@ public class GraphFrame extends JFrame {
 
     private final JFreeChart chart;
     private long epoch;
-    private long totalRewards;
+    private double totalRewards;
     private TimeSeries rewardSeries;
     private TimeSeries averageSeries;
     private TimeSeries lengthSeries;
@@ -62,15 +62,17 @@ public class GraphFrame extends JFrame {
         setVisible(true);
     }
 
-    public void addValue(long epochReward, long epochLength) {
-        epoch++;
-        totalRewards += epochReward;
-        Millisecond now = new Millisecond(new Date());
-        rewardSeries.addOrUpdate(now, epochReward);
-        lengthSeries.addOrUpdate(now, epochLength);
-        int avg = (int) (totalRewards / epoch);
-        averageSeries.addOrUpdate(now, avg);
-        chart.setTitle("Epoch #" + epoch + " - Avg Reward: " + avg);
+    public void addValue(double epochReward, long epochLength) {
+        if (epochLength != 0) {
+            epoch++;
+            totalRewards += epochReward;
+            Millisecond now = new Millisecond(new Date());
+            rewardSeries.addOrUpdate(now, epochReward);
+            lengthSeries.addOrUpdate(now, epochLength);
+            double avg = totalRewards / (double) epoch;
+            averageSeries.addOrUpdate(now, avg);
+            chart.setTitle("Epoch #" + epoch + " - Avg Reward: " + avg);
+        }
     }
 
     public void saveChartAsImage(String filename) throws Exception {

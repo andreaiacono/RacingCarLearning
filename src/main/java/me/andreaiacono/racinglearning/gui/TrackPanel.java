@@ -68,10 +68,10 @@ public class TrackPanel extends JPanel {
      *
      * @return the reward for the current position of the car
      */
-    public long getReward() {
+    public double getReward() {
 
         if (!isCarInsideScreen()) {
-            return -500;
+            return -1d;
         }
 
         // the faster the car goes, the better
@@ -85,13 +85,13 @@ public class TrackPanel extends JPanel {
 //        reward += getCheckPointsReward();
 
         // being on track is a lot better than being off track
-        reward += isCarOnTrack() ? 1 : -2;
+        reward += isCarOnTrack() ? 1 : -1;
 
 //        // the more time passes, the worse is  /// MISLEADING!
 //        long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
 //        reward += 20 * elapsedTime;
 
-        return reward;
+            return reward / 500d;
     }
 
     public void paintComponent(Graphics g) {
