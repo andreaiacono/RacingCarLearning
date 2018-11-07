@@ -13,6 +13,8 @@ import static java.awt.image.BufferedImage.TYPE_3BYTE_BGR;
 
 public class RandomRaceTrack {
 
+    private static final Color GRASS_COLOR = new Color(25, 125, 25);
+
     public BufferedImage getRandomTrack(int size, int tilesSideNumber, int seed) {
 
         Tile[][] tiles = createNewTrack(tilesSideNumber, seed);
@@ -23,7 +25,7 @@ public class RandomRaceTrack {
 
         BufferedImage bufferedImage = new BufferedImage(panelSize, panelSize, TYPE_3BYTE_BGR);
         Graphics2D g = (Graphics2D) bufferedImage.getGraphics();
-        g.setColor(Color.GREEN);
+        g.setColor(GRASS_COLOR);
         g.fillRect(0, 0, panelSize, panelSize);
 
         int cellSize = panelSize / tilesSideNumber;
@@ -32,11 +34,10 @@ public class RandomRaceTrack {
         int strokeSize = (int) (cellSize / 1.3);
         g.setStroke(new BasicStroke(strokeSize));
         g.setColor(Color.BLACK);
-        int arcSize = cellSize;
-        Image upToLeftArc = getUpToLeftAngle(arcSize, cellSize);
-        Image upToRightArc = getUpToRightAngle(arcSize, cellSize);
-        Image downToLeftArc = getDownToLeftAngle(arcSize, cellSize);
-        Image downToRightArc = getDownToRightAngle(arcSize, cellSize);
+        Image upToLeftArc = getUpToLeftAngle(cellSize, cellSize);
+        Image upToRightArc = getUpToRightAngle(cellSize, cellSize);
+        Image downToLeftArc = getDownToLeftAngle(cellSize, cellSize);
+        Image downToRightArc = getDownToRightAngle(cellSize, cellSize);
 
         for (int i = 0; i < tilesSideNumber; i++) {
             for (int j = 0; j < tilesSideNumber; j++) {
@@ -77,7 +78,7 @@ public class RandomRaceTrack {
 
     private Tile[][] createNewTrack(int size, int seed) {
 
-        Tile[][] tiles = null;
+        Tile[][] tiles;
         Random randomGenerator = new Random(seed);
 
         boolean isUncomplete;
@@ -210,7 +211,7 @@ public class RandomRaceTrack {
         int strokeSize = (int) (cellSize / 1.3);
         Image bufferedImage = new BufferedImage(cellSize, cellSize, TYPE_3BYTE_BGR);
         Graphics2D g = (Graphics2D) bufferedImage.getGraphics();
-        g.setColor(Color.GREEN);
+        g.setColor(GRASS_COLOR);
         g.fillRect(0, 0, cellSize, cellSize);
         g.setColor(Color.BLACK);
         g.setStroke(new BasicStroke(strokeSize));
