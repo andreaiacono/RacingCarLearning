@@ -20,10 +20,9 @@ import static me.andreaiacono.racinglearning.misc.Constants.SCREEN_SIZE;
 
 public class QLearning {
 
-    private static final long SCREEN_UPDATE = 50;
     private final Game game;
 
-    public static HistoryProcessor.Configuration RACING_HP = new HistoryProcessor.Configuration(
+    private static HistoryProcessor.Configuration RACING_HP = new HistoryProcessor.Configuration(
             10,             //History length
             SCREEN_SIZE,    //resize width
             SCREEN_SIZE,    //resize height
@@ -34,7 +33,7 @@ public class QLearning {
             6               //skip mod (one frame is picked every x
     );
 
-    public static QLConfiguration RACING_QL = new QLConfiguration(
+    private static QLConfiguration RACING_QL = new QLConfiguration(
                     123,      //Random seed
                     1200,    //Max step By epoch
                     6000000,  //Max step
@@ -50,7 +49,7 @@ public class QLearning {
                     true      //double-dqn
             );
 
-    public static DQNFactoryStdConv.Configuration RACING_NET_CONFIG = new DQNFactoryStdConv.Configuration(
+    private static DQNFactoryStdConv.Configuration RACING_NET_CONFIG = new DQNFactoryStdConv.Configuration(
             0.6,    //learning rate
             0.000,              //l2 regularization
             null,
@@ -98,40 +97,40 @@ public class QLearning {
             writer.append("RL4J Configuration values\n");
 
             if (epochCounter > 0) {
-                writer.append("\nOperating System: " + System.getProperty("os.name") + " [" + hostName + "]");
-                writer.append("\nStart Time: " + new Date(start).toString());
-                writer.append("\nElapsed Time: " + elapsedTime);
-                writer.append("\nEpochs: " + epochCounter);
-                writer.append("\nScreen size (in pixel): " + game.track.getSizeInPixel());
+                writer.append("\nOperating System: ").append(System.getProperty("os.name")).append(" [").append(hostName).append("]");
+                writer.append("\nStart Time: ").append(new Date(start).toString());
+                writer.append("\nElapsed Time: ").append(elapsedTime);
+                writer.append("\nEpochs: ").append(String.valueOf(epochCounter));
+                writer.append("\nScreen size (in pixel): ").append(String.valueOf(game.track.getSizeInPixel()));
             }
             writer.append("\n\nHISTORY PROCESSOR:\n");
-            writer.append("\tHistory Length: " + RACING_HP.getHistoryLength() + "\n");
-            writer.append("\tResize Width: " + RACING_HP.getRescaledWidth() + "\n");
-            writer.append("\tResize Height: " + RACING_HP.getRescaledHeight() + "\n");
-            writer.append("\tCrop Width: " + RACING_HP.getCroppingWidth() + "\n");
-            writer.append("\tCrop Height: " + RACING_HP.getCroppingHeight() + "\n");
-            writer.append("\tOffset X: " + RACING_HP.getOffsetX() + "\n");
-            writer.append("\tOffset Y: " + RACING_HP.getOffsetY() + "\n");
-            writer.append("\tSkip Frame: " + RACING_HP.getSkipFrame() + "\n");
+            writer.append("\tHistory Length: ").append(String.valueOf(RACING_HP.getHistoryLength())).append("\n");
+            writer.append("\tResize Width: ").append(String.valueOf(RACING_HP.getRescaledWidth())).append("\n");
+            writer.append("\tResize Height: ").append(String.valueOf(RACING_HP.getRescaledHeight())).append("\n");
+            writer.append("\tCrop Width: ").append(String.valueOf(RACING_HP.getCroppingWidth())).append("\n");
+            writer.append("\tCrop Height: ").append(String.valueOf(RACING_HP.getCroppingHeight())).append("\n");
+            writer.append("\tOffset X: ").append(String.valueOf(RACING_HP.getOffsetX())).append("\n");
+            writer.append("\tOffset Y: ").append(String.valueOf(RACING_HP.getOffsetY())).append("\n");
+            writer.append("\tSkip Frame: ").append(String.valueOf(RACING_HP.getSkipFrame())).append("\n");
 
             writer.append("\nQL CONFIGURATION:\n");
-            writer.append("\tRandom seed: " + RACING_QL.getSeed() + "\n");
-            writer.append("\tMax Step by Epoch: " + RACING_QL.getMaxEpochStep() + "\n");
-            writer.append("\tMax Step: " + RACING_QL.getMaxStep() + "\n");
-            writer.append("\tMax size of experience replay: " + RACING_QL.getExpRepMaxSize() + "\n");
-            writer.append("\tSize of batches: " + RACING_QL.getBatchSize() + "\n");
-            writer.append("\tTarget Update: " + RACING_QL.getTargetDqnUpdateFreq() + "\n");
-            writer.append("\tNum Step No-op Warmup: " + RACING_QL.getUpdateStart() + "\n");
-            writer.append("\tReward Scaling: " + RACING_QL.getRewardFactor() + "\n");
-            writer.append("\tGamma: " + RACING_QL.getGamma() + "\n");
-            writer.append("\tTD-Error Clipping: " + RACING_QL.getErrorClamp() + "\n");
-            writer.append("\tMin Epsilon: " + RACING_QL.getMinEpsilon() + "\n");
-            writer.append("\tNum Steps for EPS greedy anneal: " + RACING_QL.getEpsilonNbStep() + "\n");
-            writer.append("\tDouble DQN: " + RACING_QL.isDoubleDQN() + "\n");
+            writer.append("\tRandom seed: ").append(String.valueOf(RACING_QL.getSeed())).append("\n");
+            writer.append("\tMax Step by Epoch: ").append(String.valueOf(RACING_QL.getMaxEpochStep())).append("\n");
+            writer.append("\tMax Step: ").append(String.valueOf(RACING_QL.getMaxStep())).append("\n");
+            writer.append("\tMax size of experience replay: ").append(String.valueOf(RACING_QL.getExpRepMaxSize())).append("\n");
+            writer.append("\tSize of batches: ").append(String.valueOf(RACING_QL.getBatchSize())).append("\n");
+            writer.append("\tTarget Update: ").append(String.valueOf(RACING_QL.getTargetDqnUpdateFreq())).append("\n");
+            writer.append("\tNum Step No-op Warmup: ").append(String.valueOf(RACING_QL.getUpdateStart())).append("\n");
+            writer.append("\tReward Scaling: ").append(String.valueOf(RACING_QL.getRewardFactor())).append("\n");
+            writer.append("\tGamma: ").append(String.valueOf(RACING_QL.getGamma())).append("\n");
+            writer.append("\tTD-Error Clipping: ").append(String.valueOf(RACING_QL.getErrorClamp())).append("\n");
+            writer.append("\tMin Epsilon: ").append(String.valueOf(RACING_QL.getMinEpsilon())).append("\n");
+            writer.append("\tNum Steps for EPS greedy anneal: ").append(String.valueOf(RACING_QL.getEpsilonNbStep())).append("\n");
+            writer.append("\tDouble DQN: ").append(String.valueOf(RACING_QL.isDoubleDQN())).append("\n");
 
             writer.append("\nNET CONFIGURATION:\n");
-            writer.append("\tLearning Rate: " + RACING_NET_CONFIG.getLearningRate() + "\n");
-            writer.append("\tL2 Regularization: " + RACING_NET_CONFIG.getL2() + "\n");
+            writer.append("\tLearning Rate: ").append(String.valueOf(RACING_NET_CONFIG.getLearningRate())).append("\n");
+            writer.append("\tL2 Regularization: ").append(String.valueOf(RACING_NET_CONFIG.getL2())).append("\n");
 
             if (epochCounter == 0) {
                 writer.append("\nEXECUTION NOT TERMINATED\n");

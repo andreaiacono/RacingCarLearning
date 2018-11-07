@@ -31,7 +31,7 @@ public class TrackPanel extends JPanel {
     private Stroke carStrokeSize;
     private final static Random random = new Random(1520);
 
-    public TrackPanel(Car car, DrivingKeyListener listener, int size, GameParameters gameParameters, float scale) {
+    TrackPanel(Car car, DrivingKeyListener listener, int size, GameParameters gameParameters, float scale) {
 
         this.drawInfo = gameParameters.getBool(GameParameters.DRAW_INFO_PARAM);
         this.size = size;
@@ -45,7 +45,7 @@ public class TrackPanel extends JPanel {
         car.setStartingPosition(startingPosition);
         car.setMaxSpeed(size / 30);
 
-        carStrokeSize = new BasicStroke(size / 20);
+        carStrokeSize = new BasicStroke((int)(size / (double) 20));
 
         createNew();
     }
@@ -70,7 +70,7 @@ public class TrackPanel extends JPanel {
      */
     public double getReward() {
 
-        if (!isCarInsideScreen()) {
+        if (isCarOutsideScreen()) {
             return -1d;
         }
 
@@ -115,7 +115,7 @@ public class TrackPanel extends JPanel {
     }
 
 
-    public void drawCar(Graphics2D imageGraphics) {
+    private void drawCar(Graphics2D imageGraphics) {
 
         // computes and draws the car
         double cx = car.getX();
@@ -148,12 +148,12 @@ public class TrackPanel extends JPanel {
         return buffer.getData();
     }
 
-    public boolean isCarInsideScreen() {
-        return car.getX() >= 0 && car.getY() >= 0 && car.getX() < size && car.getY() < size;
+    public boolean isCarOutsideScreen() {
+        return car.getX() < 0 || car.getY() < 0 || car.getX() >= size || car.getY() >= size;
     }
 
     public boolean isCarOnTrack() {
-        if (!isCarInsideScreen()) {
+        if (isCarOutsideScreen()) {
             return false;
         }
         int pixel = trackImage.getRGB(car.getX(), car.getY());

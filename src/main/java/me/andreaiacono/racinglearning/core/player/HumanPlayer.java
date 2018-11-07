@@ -40,7 +40,7 @@ public class HumanPlayer {
             circuit.updateTrack();
 
             car.applyCommand(listener.getCommand());
-            if (!circuit.isCarInsideScreen()) {
+            if (circuit.isCarOutsideScreen()) {
                 break;
             }
 
