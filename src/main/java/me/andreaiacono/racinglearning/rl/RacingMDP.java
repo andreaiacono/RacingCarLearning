@@ -8,8 +8,11 @@ import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.space.ArrayObservationSpace;
 import org.deeplearning4j.rl4j.space.ObservationSpace;
 
+import java.text.DecimalFormat;
+
 public class RacingMDP implements MDP<ScreenFrameState, Integer, CarActionSpace> {
 
+    private DecimalFormat decimalFormat = new DecimalFormat("0.000");
     private final ObservationSpace<ScreenFrameState> observationSpace;
     private CarActionSpace carActionSpace = new CarActionSpace();
     private Game game;
@@ -53,7 +56,7 @@ public class RacingMDP implements MDP<ScreenFrameState, Integer, CarActionSpace>
     public StepReply<ScreenFrameState> step(Integer action) {
         Command command = CommandsTranslator.getCommandFromInteger(action);
         double reward = game.move(command);
-        System.out.print("\rEpoch #" + epoch + " - Executed command #" + game.getMovesNumber() + " [" + command + "] - Reward: " + reward + " - Cumulative Reward: " + game.getCumulativeReward() + " - Total moves: " + game.getCumulativeMovesNumber() + "\t\t\t\t\t\t");
+        System.out.print("\rEpoch #" + epoch + " - Executed command #" + game.getMovesNumber() + " [" + command + "] - Reward: " + reward + " - Cumulative Reward: " + decimalFormat.format(game.getCumulativeReward()) + " - Total moves: " + game.getCumulativeMovesNumber() + "\t\t\t\t\t\t");
         return new StepReply<>(new ScreenFrameState(screenBuffer), reward, game.isOver(), null);
     }
 

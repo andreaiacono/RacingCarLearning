@@ -14,6 +14,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.Date;
 
 public class GraphFrame extends JFrame {
@@ -24,6 +25,7 @@ public class GraphFrame extends JFrame {
     private TimeSeries rewardSeries;
     private TimeSeries averageSeries;
     private TimeSeries lengthSeries;
+    private DecimalFormat decimalFormat = new DecimalFormat("0.000");
 
     public GraphFrame() {
         super("Rewards Graph");
@@ -71,7 +73,7 @@ public class GraphFrame extends JFrame {
             lengthSeries.addOrUpdate(now, epochLength);
             double avg = totalRewards / (double) epoch;
             averageSeries.addOrUpdate(now, avg);
-            chart.setTitle("Epoch #" + epoch + " - Avg Reward: " + avg);
+            chart.setTitle("Epoch #" + epoch + " - Avg Reward: " + decimalFormat.format(avg));
         }
     }
 
