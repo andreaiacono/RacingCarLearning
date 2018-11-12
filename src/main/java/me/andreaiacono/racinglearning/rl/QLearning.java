@@ -23,14 +23,14 @@ public class QLearning {
     private final Game game;
 
     private static HistoryProcessor.Configuration RACING_HP = new HistoryProcessor.Configuration(
-            10,             //History length
+            4,             //History length
             SCREEN_SIZE,    //resize width
             SCREEN_SIZE,    //resize height
             SCREEN_SIZE,    //crop width
             SCREEN_SIZE,    //crop height
             0,              //cropping x offset
             0,              //cropping y offset
-            6               //skip mod (one frame is picked every x
+            2              //skip mod (one frame is picked every x
     );
 
     private static QLConfiguration RACING_QL = new QLConfiguration(
@@ -41,16 +41,16 @@ public class QLearning {
                     32,       //size of batches
                     10000,    //target update (hard)
                     500,      //num step noop warmup
-                    0.1,      //reward scaling
-                    0.1,      //gamma
+                    0.0001,      //reward scaling
+                    0.0001,      //gamma
                     100.0,    //td-error clipping
-                    0.2f,     //min epsilon
+                    0.1f,     //min epsilon
                     100000,   //num step for eps greedy anneal
                     true      //double-dqn
             );
 
     private static DQNFactoryStdConv.Configuration RACING_NET_CONFIG = new DQNFactoryStdConv.Configuration(
-            0.6,    //learning rate
+            0.9,    //learning rate
             0.000,              //l2 regularization
             null,
             null
