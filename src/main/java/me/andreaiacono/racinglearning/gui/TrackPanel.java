@@ -15,7 +15,7 @@ import java.util.Random;
 public class TrackPanel extends JPanel {
 
     private static final Color CAR_BODY_COLOR = new Color(255, 180, 255);
-    private static final Color CAR_HEAD_COLOR = Color.WHITE;
+    private static final Color CAR_HEAD_COLOR = Color.YELLOW;
     public static final int CAR_STARTING_ANGLE = 0;
     private static final int TILES_SIDE_NUMBER = 4;
     private final int size;
@@ -133,9 +133,9 @@ public class TrackPanel extends JPanel {
         imageGraphics.setColor(CAR_BODY_COLOR);
         imageGraphics.drawLine((int) cx, (int) cy, (int) (cx + cosAngle*1.01), (int) (cy + sinAngle*1.01));
 
-//        // draws the car head
-//        imageGraphics.setColor(CAR_HEAD_COLOR);
-//        imageGraphics.drawLine((int) cx, (int) cy, (int) cx, (int) cy);
+        // draws the car head
+        imageGraphics.setColor(CAR_HEAD_COLOR);
+        imageGraphics.drawLine((int) cx, (int) cy, (int) cx, (int) cy);
     }
 
     private String addZeroIfNeeded(long value) {
@@ -168,11 +168,11 @@ public class TrackPanel extends JPanel {
     public void updateTrack() {
 
         // creates the image where to draw
-        Graphics2D imageGraphics = (Graphics2D) trackRaceImage.getGraphics();
+        Graphics2D graphics = (Graphics2D) trackRaceImage.getGraphics();
 
         // draws the track and the car
-        imageGraphics.drawImage(trackImage, 0, 0, null);
-        drawCar(imageGraphics);
+        graphics.drawImage(trackImage, 0, 0, null);
+        drawCar(graphics);
 
         repaint();
         //paintImmediately(0, 0, getWidth(), getHeight());

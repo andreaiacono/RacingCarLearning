@@ -7,25 +7,26 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.util.ShapeUtils;
-import org.jfree.data.time.Millisecond;
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.time.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Date;
+import java.util.List;
 
 public class GraphFrame extends JFrame {
 
+    private static final int MOVING_WINDOW = 10;
     private final JFreeChart chart;
+    private final TimeSeriesCollection rewardDataset;
     private long epoch;
-    private double totalRewards;
     private TimeSeries rewardSeries;
     private TimeSeries averageSeries;
     private TimeSeries lengthSeries;
     private DecimalFormat decimalFormat = new DecimalFormat("0.000");
+    private double avg;
 
     public GraphFrame() {
         super("Rewards Graph");
@@ -34,14 +35,13 @@ public class GraphFrame extends JFrame {
 
         rewardSeries = new TimeSeries("Epoch cumulative rewards");
         averageSeries = new TimeSeries("Average Rewards");
-        lengthSeries = new TimeSeries("Length");
-        TimeSeriesCollection rewardDataset = new TimeSeriesCollection();
-        rewardDataset.addSeries(averageSeries);
+        rewardDataset = new TimeSeriesCollection();
         rewardDataset.addSeries(rewardSeries);
+        rewardDataset.addSeries(averageSeries);
 
+        lengthSeries = new TimeSeries("Length");
         TimeSeriesCollection lengthDataset = new TimeSeriesCollection();
         lengthDataset.addSeries(lengthSeries);
-
         chart = org.jfree.chart.ChartFactory.createTimeSeriesChart("Rewards", "time", "reward", rewardDataset, true, true, false);
         XYPlot plot = chart.getXYPlot();
 
@@ -52,7 +52,6 @@ public class GraphFrame extends JFrame {
         lengthRenderer.setSeriesLinesVisible(0, false);
         lengthRenderer.setSeriesShapesVisible(0, true);
         lengthRenderer.setSeriesShape(0, ShapeUtils.createDiamond(2f));
-
         plot.setDataset(1, lengthDataset);
         plot.setRangeAxis(1, lengthRangeAxis);
         plot.mapDatasetToRangeAxis(1, 1);
@@ -67,13 +66,18 @@ public class GraphFrame extends JFrame {
     public void addValue(double epochReward, long epochLength) {
         if (epochLength != 0) {
             epoch++;
-            totalRewards += epochReward;
             Millisecond now = new Millisecond(new Date());
             rewardSeries.addOrUpdate(now, epochReward);
             lengthSeries.addOrUpdate(now, epochLength);
-            double avg = totalRewards / (double) epoch;
-            averageSeries.addOrUpdate(now, avg);
             chart.setTitle("Epoch #" + epoch + " - Avg Reward: " + decimalFormat.format(avg));
+            if (epoch % MOVING_WINDOW == 0) {
+                avg = 0;
+                List<TimeSeriesDataItem> items = rewardSeries.getItems();
+                for (TimeSeriesDataItem item: items.subList(items.size() - MOVING_WINDOW, items.size()) ) {
+                    avg += item.getValue().doubleValue();
+                }
+                averageSeries.addOrUpdate(now, avg / (double)MOVING_WINDOW);
+            }
         }
     }
 
