@@ -18,7 +18,7 @@ import java.util.List;
 
 public class GraphFrame extends JFrame {
 
-    private static final int MOVING_WINDOW = 10;
+    private static final int MOVING_WINDOW = 1000;
     private final JFreeChart chart;
     private final TimeSeriesCollection rewardDataset;
     private long epoch;
