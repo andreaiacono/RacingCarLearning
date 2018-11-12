@@ -6,7 +6,7 @@ import static me.andreaiacono.racinglearning.gui.TrackPanel.CAR_STARTING_ANGLE;
 
 public class Car {
 
-    private static final double AUTO_SLOW_DOWN = 0.2;
+    private static final double AUTO_SLOW_DOWN = 0.1;
     private static final int MAX_STEERING_ANGLE = 45;
     private boolean isOnTrack;
 
@@ -35,7 +35,7 @@ public class Car {
 
     public void steer(double angle) {
 
-        if (velocity.speed > 0) {
+        if (velocity.speed >= 0) {
             double heading = Math.max(-MAX_STEERING_ANGLE, Math.min(angle, MAX_STEERING_ANGLE));
             velocity.direction = (velocity.direction + heading) % 360.0;
         }
@@ -66,7 +66,7 @@ public class Car {
         }
 
         if (command.getLateralValue() != 0) {
-            steer(8 * command.getLateralValue());
+            steer(12 * command.getLateralValue());
         }
     }
 
