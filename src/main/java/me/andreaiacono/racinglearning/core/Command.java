@@ -9,14 +9,14 @@ import java.util.Arrays;
  */
 public enum Command {
     ACCELERATE(1, 0),
-    BRAKE(-1, 0),
+//    BRAKE(-1, 0),
     TURN_LEFT(0, -1),
-    TURN_RIGHT(0, 1),
-    ACCELERATE_TURN_LEFT(1, -1),
-    ACCELERATE_TURN_RIGHT(1, 1),
-    BRAKE_TURN_LEFT(-1, -1),
-    BRAKE_TURN_RIGHT(-1, 1),
-    NO_OP(0, 0);
+    TURN_RIGHT(0, 1);
+//    ACCELERATE_TURN_LEFT(1, -1),
+//    ACCELERATE_TURN_RIGHT(1, 1),
+//    BRAKE_TURN_LEFT(-1, -1),
+//    BRAKE_TURN_RIGHT(-1, 1),
+//    NO_OP(0, 0);
 
     private int frontal;
     private int lateral;

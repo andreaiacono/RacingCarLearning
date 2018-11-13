@@ -45,6 +45,12 @@ public class DrivingKeyListener implements KeyListener {
     public Command getCommand() {
         int frontal = directions.upPressed ? 1 : directions.downPressed ? -1 : 0;
         int lateral = directions.rightPressed ? 1 : directions.leftPressed ? -1 : 0;
+//        if (frontal == 0 && lateral == 0) {
+//            return Command.ACCELERATE;
+//        }
+//        if (lateral != 0) {
+//            frontal = 0;
+//        }
         return Command.getCommand(frontal, lateral);
     }
 

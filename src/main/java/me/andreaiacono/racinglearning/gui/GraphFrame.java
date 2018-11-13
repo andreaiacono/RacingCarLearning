@@ -36,8 +36,8 @@ public class GraphFrame extends JFrame {
         rewardSeries = new TimeSeries("Epoch cumulative rewards");
         averageSeries = new TimeSeries("Average Rewards");
         rewardDataset = new TimeSeriesCollection();
-        rewardDataset.addSeries(rewardSeries);
         rewardDataset.addSeries(averageSeries);
+        rewardDataset.addSeries(rewardSeries);
 
         lengthSeries = new TimeSeries("Length");
         TimeSeriesCollection lengthDataset = new TimeSeriesCollection();
@@ -70,7 +70,7 @@ public class GraphFrame extends JFrame {
             rewardSeries.addOrUpdate(now, epochReward);
             lengthSeries.addOrUpdate(now, epochLength);
             chart.setTitle("Epoch #" + epoch + " - Avg Reward: " + decimalFormat.format(avg));
-            if (epoch % MOVING_WINDOW == 0) {
+            if (epoch > MOVING_WINDOW) {
                 avg = 0;
                 List<TimeSeriesDataItem> items = rewardSeries.getItems();
                 for (TimeSeriesDataItem item: items.subList(items.size() - MOVING_WINDOW, items.size()) ) {
