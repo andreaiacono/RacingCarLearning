@@ -21,12 +21,12 @@ public class GraphFrame extends JFrame {
     private static final int MOVING_WINDOW = 1000;
     private final JFreeChart chart;
     private final TimeSeriesCollection rewardDataset;
-    private long epoch;
+    private int epoch;
     private TimeSeries rewardSeries;
     private TimeSeries averageSeries;
     private TimeSeries lengthSeries;
-    private DecimalFormat decimalFormat = new DecimalFormat("0.000");
-    private double avg;
+    private DecimalFormat decimalFormat = new DecimalFormat("000.000");
+    private double sum;
 
     public GraphFrame() {
         super("Rewards Graph");
@@ -69,15 +69,15 @@ public class GraphFrame extends JFrame {
             Millisecond now = new Millisecond(new Date());
             rewardSeries.addOrUpdate(now, epochReward);
             lengthSeries.addOrUpdate(now, epochLength);
-            chart.setTitle("Epoch #" + epoch + " - Avg Reward: " + decimalFormat.format(avg));
-            if (epoch > MOVING_WINDOW) {
-                avg = 0;
-                List<TimeSeriesDataItem> items = rewardSeries.getItems();
-                for (TimeSeriesDataItem item: items.subList(items.size() - MOVING_WINDOW, items.size()) ) {
-                    avg += item.getValue().doubleValue();
-                }
-                averageSeries.addOrUpdate(now, avg / (double)MOVING_WINDOW);
+            List<TimeSeriesDataItem> items = rewardSeries.getItems();
+            int startingEpoch = epoch > MOVING_WINDOW ? items.size() - MOVING_WINDOW : 0;
+            sum = 0;
+            for (TimeSeriesDataItem item: items.subList(startingEpoch, items.size()) ) {
+                sum += item.getValue().doubleValue();
             }
+            double average = sum / (double) (items.size() - startingEpoch);
+            averageSeries.addOrUpdate(now, average);
+            chart.setTitle("Epoch #" + epoch + " - Avg Reward: " + decimalFormat.format(average));
         }
     }
 
