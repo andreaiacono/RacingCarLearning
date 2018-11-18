@@ -9,15 +9,14 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.awt.image.BufferedImage.TYPE_INT_RGB;
-
 public class RandomRaceTrack {
 
+    public static int IMAGE_TYPE = BufferedImage.TYPE_3BYTE_BGR;
     private static final Color GRASS_COLOR = new Color(25, 125, 25);
 
     public BufferedImage getEasyTrack(int size, double ratio) {
 
-        BufferedImage bufferedImage = new BufferedImage(size, size, TYPE_INT_RGB);
+        BufferedImage bufferedImage = new BufferedImage(size, size, IMAGE_TYPE);
         Graphics2D g = (Graphics2D) bufferedImage.getGraphics();
         g.setColor(GRASS_COLOR);
         g.fillRect(0, 0, size, size);
@@ -36,7 +35,7 @@ public class RandomRaceTrack {
 
     private BufferedImage createImageFromTiles(int panelSize, int tilesSideNumber, Tile[][] tiles) {
 
-        BufferedImage bufferedImage = new BufferedImage(panelSize, panelSize, TYPE_INT_RGB);
+        BufferedImage bufferedImage = new BufferedImage(panelSize, panelSize, IMAGE_TYPE);
         Graphics2D g = (Graphics2D) bufferedImage.getGraphics();
         g.setColor(GRASS_COLOR);
         g.fillRect(0, 0, panelSize, panelSize);
@@ -222,7 +221,7 @@ public class RandomRaceTrack {
 
     private Image getAngleTile(int x, int y, int cellSize, int arcSize, int startingAngle, int angle) {
         int strokeSize = (int) (cellSize / 1.3);
-        Image bufferedImage = new BufferedImage(cellSize, cellSize, TYPE_INT_RGB);
+        Image bufferedImage = new BufferedImage(cellSize, cellSize, IMAGE_TYPE);
         Graphics2D g = (Graphics2D) bufferedImage.getGraphics();
         g.setColor(GRASS_COLOR);
         g.fillRect(0, 0, cellSize, cellSize);

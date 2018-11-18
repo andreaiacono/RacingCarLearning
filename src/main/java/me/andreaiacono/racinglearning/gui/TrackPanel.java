@@ -64,7 +64,7 @@ public class TrackPanel extends JPanel {
         }
 
         // the image of the track AND the car (based on trackImage)
-        trackRaceImage = new BufferedImage(trackImage.getWidth(), trackImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+        trackRaceImage = new BufferedImage(trackImage.getWidth(), trackImage.getHeight(), RandomRaceTrack.IMAGE_TYPE);
         car.reset();
     }
 
