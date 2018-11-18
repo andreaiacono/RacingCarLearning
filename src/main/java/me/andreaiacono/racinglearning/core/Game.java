@@ -6,6 +6,7 @@ import me.andreaiacono.racinglearning.gui.TrackPanel;
 public class Game {
 
     private int trackDuration;
+    private GameParameters params;
     private int epoch;
     private int cumulativeMovesNumber;
     private int movesNumber;
@@ -19,6 +20,7 @@ public class Game {
         this.car = car;
         this.track = track;
         this.trackDuration = params.getValueWithDefault(GameParameters.TRACK_DURATION, Integer.MAX_VALUE);
+        this.params = params;
         if (trackDuration == 0) {
             trackDuration = Integer.MAX_VALUE;
         }
@@ -62,7 +64,7 @@ public class Game {
         // refreshes the screen with the new position
         track.updateTrack();
 
-        double reward = track.getReward();
+        double reward = track.getReward(movesNumber);
         epochReward += reward;
         return reward;
     }
@@ -83,5 +85,9 @@ public class Game {
 
     public int getCumulativeMovesNumber() {
         return cumulativeMovesNumber;
+    }
+
+    public GameParameters getGameParams() {
+        return params;
     }
 }

@@ -1,6 +1,7 @@
 package me.andreaiacono.racinglearning.rl;
 
 import me.andreaiacono.racinglearning.core.Game;
+import me.andreaiacono.racinglearning.core.GameParameters;
 import org.apache.commons.io.IOUtils;
 import org.deeplearning4j.rl4j.learning.HistoryProcessor;
 import org.deeplearning4j.rl4j.learning.sync.qlearning.QLearning.QLConfiguration;
@@ -20,6 +21,7 @@ import static me.andreaiacono.racinglearning.misc.Constants.SCREEN_SIZE;
 
 public class QLearning {
 
+    public static final int MAX_MOVES_PER_EPOCH = 1200;
     private final Game game;
 
     private static HistoryProcessor.Configuration RACING_HP = new HistoryProcessor.Configuration(
@@ -35,8 +37,8 @@ public class QLearning {
 
     private static QLConfiguration RACING_QL = new QLConfiguration(
                     123,      //Random seed
-                    1200,    //Max step By epoch
-                    6000000,  //Max step
+                    MAX_MOVES_PER_EPOCH,    //Max step By epoch
+                    8000000,  //Max step
                     1000000,  //Max size of experience replay
                     32,       //size of batches
                     10000,    //target update (hard)
@@ -44,7 +46,7 @@ public class QLearning {
                     0.0001,      //reward scaling
                     0.0001,      //gamma
                     100.0,    //td-error clipping
-                    0.1f,     //min epsilon
+                    0.2f,     //min epsilon
                     100000,   //num step for eps greedy anneal
                     true      //double-dqn
             );
@@ -112,6 +114,9 @@ public class QLearning {
             writer.append("\tOffset X: ").append(String.valueOf(RACING_HP.getOffsetX())).append("\n");
             writer.append("\tOffset Y: ").append(String.valueOf(RACING_HP.getOffsetY())).append("\n");
             writer.append("\tSkip Frame: ").append(String.valueOf(RACING_HP.getSkipFrame())).append("\n");
+            if (game.getGameParams().isProvided(GameParameters.EASY_PARAM)) {
+                writer.append("\tEasy Mode: ").append("" + game.getGameParams().getDouble(GameParameters.EASY_PARAM)).append("\n");
+            }
 
             writer.append("\nQL CONFIGURATION:\n");
             writer.append("\tRandom seed: ").append(String.valueOf(RACING_QL.getSeed())).append("\n");

@@ -15,6 +15,7 @@ public class GameParameters {
     public static final String SIZE_PARAM = "s";
     public static final String TRACK_DURATION = "d";
     public static final String SCALE_PARAM = "c";
+    public static final String EASY_PARAM = "e";
 
     public enum Type {
         HUMAN, MACHINE_LEARN, MACHINE_RACE;
@@ -29,6 +30,7 @@ public class GameParameters {
         options.addOption(MODEL_NAME_PARAM, true, "The filename of the model to load/save");
         options.addOption(SIZE_PARAM, true, "The size in pixel of the screen");
         options.addOption(SCALE_PARAM, true, "The scale of the shown track");
+        options.addOption(EASY_PARAM, true, "The percentage of an easy track");
         options.addOption(TRACK_DURATION, true, "The number of epochs after which the track is changed");
 
         CommandLineParser parser = new DefaultParser();
@@ -50,6 +52,10 @@ public class GameParameters {
 
     public int getValueWithDefault(String paramName, int defaultValue) {
         return isProvided(paramName) ? Integer.valueOf(cmd.getOptionValue(paramName)) : defaultValue;
+    }
+
+    public double getDouble(String paramName) {
+        return Double.parseDouble(cmd.getOptionValue(paramName));
     }
 
     public boolean getBool(String paramName) {

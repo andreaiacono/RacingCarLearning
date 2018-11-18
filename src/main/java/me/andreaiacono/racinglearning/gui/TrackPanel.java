@@ -3,6 +3,7 @@ package me.andreaiacono.racinglearning.gui;
 import me.andreaiacono.racinglearning.core.Car;
 import me.andreaiacono.racinglearning.core.GameParameters;
 import me.andreaiacono.racinglearning.misc.DrivingKeyListener;
+import me.andreaiacono.racinglearning.rl.QLearning;
 import me.andreaiacono.racinglearning.track.RandomRaceTrack;
 
 import javax.swing.*;
@@ -25,9 +26,9 @@ public class TrackPanel extends JPanel {
     // the racing track with the car drawn on it
     private BufferedImage trackImage;
     private final Car car;
+    private GameParameters gameParameters;
     private float scale;
     private BufferedImage trackRaceImage;
-    private long time;
     private Stroke carStrokeSize;
     private final static Random random = new Random(1520);
 
@@ -37,6 +38,7 @@ public class TrackPanel extends JPanel {
         this.size = size;
 
         this.car = car;
+        this.gameParameters = gameParameters;
         this.scale = scale;
         setFocusable(true);
         addKeyListener(listener);
@@ -52,12 +54,17 @@ public class TrackPanel extends JPanel {
 
 
     public void createNew() {
-        // the image of the track (used for checking if the car is on the track or not)
-        trackImage = new RandomRaceTrack().getRandomTrack(size, TILES_SIDE_NUMBER, random.nextInt());
+
+        if (gameParameters.isProvided(GameParameters.EASY_PARAM)) {
+            trackImage = new RandomRaceTrack().getEasyTrack(size, gameParameters.getDouble(GameParameters.EASY_PARAM));
+        }
+        else {
+            // the image of the track (used for checking if the car is on the track or not)
+            trackImage = new RandomRaceTrack().getRandomTrack(size, TILES_SIDE_NUMBER, random.nextInt());
+        }
 
         // the image of the track AND the car (based on trackImage)
-        trackRaceImage = new BufferedImage(trackImage.getWidth(), trackImage.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-
+        trackRaceImage = new BufferedImage(trackImage.getWidth(), trackImage.getHeight(), BufferedImage.TYPE_INT_RGB);
         car.reset();
     }
 
@@ -67,11 +74,16 @@ public class TrackPanel extends JPanel {
      * track, the reward will be low.
      *
      * @return the reward for the current position of the car
+     * @param movesNumber
      */
-    public double getReward() {
+    public double getReward(int movesNumber) {
+
+        if (movesNumber == QLearning.MAX_MOVES_PER_EPOCH) {
+            return 100d;
+        }
 
         if (isCarOutsideScreen()) {
-            return -1d;
+            return -100d;
         }
 
         // the faster the car goes, the better
@@ -85,7 +97,7 @@ public class TrackPanel extends JPanel {
 //        reward += getCheckPointsReward();
 
         // being on track is a lot better than being off track
-        reward += isCarOnTrack() ? 1 : -1;
+        reward += isCarOnTrack() ? 10 : -10;
 
 //        // the more time passes, the worse is  /// MISLEADING!
 //        long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
@@ -100,15 +112,15 @@ public class TrackPanel extends JPanel {
         // the trackRaceImage is updated in update
 
         // draws info
-        if (drawInfo) {
-            String time = addZeroIfNeeded(this.time / 1000) + ":" + addZeroIfNeeded((this.time % 1000) / 10);
-            System.out.print("\r[" + time + "] REWARD: " + getReward() + " - CAR:" + car.toString());
+//        if (drawInfo) {
+//            String time = addZeroIfNeeded(this.time / 1000) + ":" + addZeroIfNeeded((this.time % 1000) / 10);
+//            System.out.print("\r[" + time + "] REWARD: " + getReward(0) + " - CAR:" + car.toString());
 //            imageGraphics.setFont(INFO_FONT);
 //            imageGraphics.drawString(car.toString(), 10, 10);
 //            imageGraphics.drawString("REWARD: " + getReward(), 10, 20);
 //            imageGraphics.drawString("Checks: " + checkSteps.toString(), 10, 30);
 //            imageGraphics.drawString("TIME: " + time, 10, 40);
-        }
+//        }
 
         // draws the image to the panel
         g.drawImage(trackRaceImage.getScaledInstance((int) (size * scale), (int) (size * scale), Image.SCALE_FAST), 0, 0, null);
