@@ -2,10 +2,8 @@ package me.andreaiacono.racinglearning.track;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,8 +20,9 @@ public class RandomRaceTrack {
         g.fillRect(0, 0, size, size);
 
         g.setColor(Color.BLACK);
-        int start = size - (int)(size * ratio);
-        g.fillRect(0, start, size, size-start);
+        int squareSize = (int)(size * ratio);
+        int start = (size - squareSize)/2;
+        g.fillRect(start, start, squareSize, squareSize);
 
         return bufferedImage;
     }
@@ -142,7 +141,7 @@ public class RandomRaceTrack {
                 tiles[currentX][currentY] = newTile;
             } while (startX != currentX || startY != currentY);
 
-            long count = Stream.of(tiles).flatMap(Stream::of).filter(tile -> tile != null).count();
+            long count = Stream.of(tiles).flatMap(Stream::of).filter(Objects::nonNull).count();
             isTooSmall = count < (size * size) / 2;
 
         } while (isUncomplete || isTooSmall);
