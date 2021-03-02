@@ -26,7 +26,7 @@ public class GraphFrame extends JFrame {
     private TimeSeries averageSeries;
     private TimeSeries lengthSeries;
     private DecimalFormat decimalFormat = new DecimalFormat("000.000");
-    private double sum;
+    private double totalSum;
 
     public GraphFrame() {
         super("Rewards Graph");
@@ -70,12 +70,13 @@ public class GraphFrame extends JFrame {
             rewardSeries.addOrUpdate(now, epochReward);
             lengthSeries.addOrUpdate(now, epochLength);
             List<TimeSeriesDataItem> items = rewardSeries.getItems();
-            int startingEpoch = epoch > MOVING_WINDOW ? items.size() - MOVING_WINDOW : 0;
-            sum = 0;
-            for (TimeSeriesDataItem item: items.subList(startingEpoch, items.size()) ) {
-                sum += item.getValue().doubleValue();
+
+            totalSum += items.get(items.size()-1).getValue().doubleValue();
+            if (epoch > MOVING_WINDOW) {
+                int indexToDelete = items.size() - MOVING_WINDOW;
+                totalSum -= items.get(indexToDelete).getValue().doubleValue();
             }
-            double average = sum / (double) (items.size() - startingEpoch);
+            double average = totalSum / (epoch > MOVING_WINDOW ? MOVING_WINDOW : items.size());
             averageSeries.addOrUpdate(now, average);
             chart.setTitle("Epoch #" + epoch + " - Avg Reward: " + decimalFormat.format(average));
         }
