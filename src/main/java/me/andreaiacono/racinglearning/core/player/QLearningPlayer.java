@@ -1,7 +1,7 @@
 package me.andreaiacono.racinglearning.core.player;
 
 import me.andreaiacono.racinglearning.core.Game;
-import me.andreaiacono.racinglearning.rl.QLearning;
+import me.andreaiacono.racinglearning.rl.RacingQL;
 
 public class QLearningPlayer {
 
@@ -12,10 +12,10 @@ public class QLearningPlayer {
     }
 
     public void learn(String modelName) throws Exception {
-        new QLearning(game).learn(modelName);
+        new RacingQL(game).learn(modelName);
     }
 
     public void race(String modelName) throws Exception {
-        new QLearning(game).race(modelName);
+        new RacingQL(game).race(modelName);
     }
 }

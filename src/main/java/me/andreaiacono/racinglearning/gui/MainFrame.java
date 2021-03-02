@@ -27,7 +27,7 @@ public class MainFrame extends JFrame {
                 : 1;
 
         // creates the car
-        car = new Car();
+        car = new Car(params.getBool(GameParameters.SIMPLE_CAR_PARAM));
 
         // creates and adds the track to this window
         TrackPanel panel = new TrackPanel(car, listener, size, params, scale);

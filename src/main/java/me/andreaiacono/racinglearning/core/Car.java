@@ -25,6 +25,13 @@ public class Car {
     private Point startingPosition;
     private int maxSpeed;
 
+    // draws a square instead of a car
+    private boolean isSimple = false;
+
+    public Car(boolean isSimple) {
+        this.isSimple = isSimple;
+    }
+
     public void accelerate(double qty) {
         velocity.speed = Math.min(velocity.speed + qty, maxSpeed);
     }
@@ -178,6 +185,10 @@ public class Car {
             return sb.toString();
         }
 
+    }
+
+    public boolean isSimple() {
+        return isSimple;
     }
 }
 

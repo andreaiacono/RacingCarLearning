@@ -3,7 +3,7 @@ package me.andreaiacono.racinglearning.gui;
 import me.andreaiacono.racinglearning.core.Car;
 import me.andreaiacono.racinglearning.core.GameParameters;
 import me.andreaiacono.racinglearning.misc.DrivingKeyListener;
-import me.andreaiacono.racinglearning.rl.QLearning;
+import me.andreaiacono.racinglearning.rl.RacingQL;
 import me.andreaiacono.racinglearning.track.RandomRaceTrack;
 
 import javax.swing.*;
@@ -18,8 +18,8 @@ public class TrackPanel extends JPanel {
     private static final Color CAR_BODY_COLOR = new Color(255, 180, 255);
     private static final Color CAR_HEAD_COLOR = Color.YELLOW;
     public static final int CAR_STARTING_ANGLE = 0;
-    private static final int TILES_SIDE_NUMBER = 4;
     private final int size;
+    private final int tilesNumber;
 
     private boolean drawInfo;
 
@@ -31,10 +31,12 @@ public class TrackPanel extends JPanel {
     private BufferedImage trackRaceImage;
     private Stroke carStrokeSize;
     private final static Random random = new Random(1520);
+    private double lastReward;
 
     TrackPanel(Car car, DrivingKeyListener listener, int size, GameParameters gameParameters, float scale) {
 
         this.drawInfo = gameParameters.getBool(GameParameters.DRAW_INFO_PARAM);
+        this.tilesNumber = gameParameters.getValueWithDefault(GameParameters.TILES_NUMBER_PARAM, 4);
         this.size = size;
 
         this.car = car;
@@ -43,7 +45,7 @@ public class TrackPanel extends JPanel {
         setFocusable(true);
         addKeyListener(listener);
 
-        Point startingPosition = new Point(size / 2, (size / TILES_SIDE_NUMBER) / 2);
+        Point startingPosition = new Point(size / 2, (size / tilesNumber) / 2);
         car.setStartingPosition(startingPosition);
         car.setMaxSpeed(size / 30);
 
@@ -60,7 +62,7 @@ public class TrackPanel extends JPanel {
         }
         else {
             // the image of the track (used for checking if the car is on the track or not)
-            trackImage = new RandomRaceTrack().getRandomTrack(size, TILES_SIDE_NUMBER, random.nextInt());
+            trackImage = new RandomRaceTrack().getRandomTrack(size, tilesNumber, random.nextInt());
         }
 
         // the image of the track AND the car (based on trackImage)
@@ -78,7 +80,7 @@ public class TrackPanel extends JPanel {
      */
     public double getReward(int movesNumber) {
 
-        if (movesNumber == QLearning.MAX_MOVES_PER_EPOCH) {
+        if (movesNumber == RacingQL.MAX_MOVES_PER_EPOCH) {
             return 100d;
         }
 
@@ -103,7 +105,8 @@ public class TrackPanel extends JPanel {
 //        long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
 //        reward += 20 * elapsedTime;
 
-            return reward / 500d;
+        lastReward = reward / 500d;
+        return lastReward;
     }
 
     public void paintComponent(Graphics g) {
@@ -124,6 +127,15 @@ public class TrackPanel extends JPanel {
 
         // draws the image to the panel
         g.drawImage(trackRaceImage.getScaledInstance((int) (size * scale), (int) (size * scale), Image.SCALE_FAST), 0, 0, null);
+
+        // adds info of reward
+        if (lastReward < 0) {
+            g.setColor(Color.RED);
+        }
+        else {
+            g.setColor(Color.CYAN);
+        }
+        g.fillRect((int) ((size * scale)-8), (int) ((size * scale)-8), 6, 6);
     }
 
 
@@ -132,18 +144,20 @@ public class TrackPanel extends JPanel {
         // computes and draws the car
         double cx = car.getX();
         double cy = car.getY();
-        double carTailDirection = (car.getDirection() - 180) % 360;
-        double carLength = Math.abs(size / 15);
-//        double carLength = Math.abs(car.getVelocity().speed*1.5);
-
-        double cosAngle = Math.cos(Math.toRadians(carTailDirection)) * carLength;
-        double sinAngle = Math.sin(Math.toRadians(carTailDirection)) * carLength;
-
         imageGraphics.setStroke(carStrokeSize);
 
-        // draws the car body
-        imageGraphics.setColor(CAR_BODY_COLOR);
-        imageGraphics.drawLine((int) cx, (int) cy, (int) (cx + cosAngle*1.01), (int) (cy + sinAngle*1.01));
+        if (!car.isSimple()) {
+            double carTailDirection = (car.getDirection() - 180) % 360;
+            double carLength = Math.abs(size / 15);
+            // double carLength = Math.abs(car.getVelocity().speed * 1.5);
+
+            double cosAngle = Math.cos(Math.toRadians(carTailDirection)) * carLength;
+            double sinAngle = Math.sin(Math.toRadians(carTailDirection)) * carLength;
+
+            // draws the car body
+            imageGraphics.setColor(CAR_BODY_COLOR);
+            imageGraphics.drawLine((int) cx, (int) cy, (int) (cx + cosAngle * 1.01), (int) (cy + sinAngle * 1.01));
+        }
 
         // draws the car head
         imageGraphics.setColor(CAR_HEAD_COLOR);
@@ -201,5 +215,6 @@ public class TrackPanel extends JPanel {
     public int getSizeInPixel() {
         return size;
     }
+
 
 }

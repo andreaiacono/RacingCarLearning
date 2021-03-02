@@ -16,6 +16,8 @@ public class GameParameters {
     public static final String TRACK_DURATION = "d";
     public static final String SCALE_PARAM = "c";
     public static final String EASY_PARAM = "e";
+    public static final String SIMPLE_CAR_PARAM = "p";
+    public static final String TILES_NUMBER_PARAM = "n";
 
     public enum Type {
         HUMAN, MACHINE_LEARN, MACHINE_RACE;
@@ -30,6 +32,8 @@ public class GameParameters {
         options.addOption(MODEL_NAME_PARAM, true, "The filename of the model to load/save");
         options.addOption(SIZE_PARAM, true, "The size in pixel of the screen");
         options.addOption(SCALE_PARAM, true, "The scale of the shown track");
+        options.addOption(TILES_NUMBER_PARAM, true, "The number of tiles for generating the random track");
+        options.addOption(SIMPLE_CAR_PARAM, false, "Draws a simple car (a square) instead of a more complex");
         options.addOption(EASY_PARAM, true, "The percentage of an easy track");
         options.addOption(TRACK_DURATION, true, "The number of epochs after which the track is changed");
 
