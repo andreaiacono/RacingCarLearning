@@ -36,6 +36,7 @@ public class MainFrame extends JFrame {
         panel.setFocusable(true);
         add(panel);
         setSize((int) (size * scale), (int) (size * scale) + 30);
+        setLocation(100, 50);
 
         // starts the game
         gameWorker = new GameWorker(game, params, listener);

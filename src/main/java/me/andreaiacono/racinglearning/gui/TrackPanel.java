@@ -3,7 +3,6 @@ package me.andreaiacono.racinglearning.gui;
 import me.andreaiacono.racinglearning.core.Car;
 import me.andreaiacono.racinglearning.core.GameParameters;
 import me.andreaiacono.racinglearning.misc.DrivingKeyListener;
-import me.andreaiacono.racinglearning.rl.RacingQL;
 import me.andreaiacono.racinglearning.track.RandomRaceTrack;
 
 import javax.swing.*;
@@ -80,9 +79,9 @@ public class TrackPanel extends JPanel {
      */
     public double getReward(int movesNumber) {
 
-        if (movesNumber == RacingQL.MAX_MOVES_PER_EPOCH) {
-            return 100d;
-        }
+//        if (movesNumber == RacingQL.MAX_MOVES_PER_EPOCH) {
+//            return 100d;
+//        }
 
         if (isCarOutsideScreen()) {
             return -100d;

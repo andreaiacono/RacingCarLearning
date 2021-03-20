@@ -31,7 +31,8 @@ public class GraphFrame extends JFrame {
     public GraphFrame() {
         super("Rewards Graph");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setSize(400, 250);
+        setSize(800, 500);
+        setLocation(400,200);
 
         rewardSeries = new TimeSeries("Epoch cumulative rewards");
         averageSeries = new TimeSeries("Average Rewards");

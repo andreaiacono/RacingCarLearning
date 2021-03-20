@@ -4,9 +4,6 @@ import me.andreaiacono.racinglearning.core.GameParameters;
 import me.andreaiacono.racinglearning.gui.MainFrame;
 import me.andreaiacono.racinglearning.misc.Constants;
 import org.nd4j.jita.conf.CudaEnvironment;
-import org.nd4j.linalg.api.buffer.DataBuffer;
-import org.nd4j.linalg.api.buffer.util.DataTypeUtil;
-import org.nd4j.linalg.factory.Nd4j;
 
 public class Main {
 

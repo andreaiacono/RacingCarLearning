@@ -28,12 +28,12 @@ public class RandomTrackDemo extends JFrame implements ChangeListener {
 
         JPanel panel = new JPanel();
 
-        JSlider sizeSlider = new JSlider(JSlider.HORIZONTAL, 4, 200, 40);
+        JSlider sizeSlider = new JSlider(JSlider.HORIZONTAL, 4, 500, 40);
         sizeSlider.addChangeListener(this);
         sizeSlider.setName("size");
         panel.add(sizeSlider);
 
-        JSlider gridSlider = new JSlider(JSlider.HORIZONTAL, 2, 10, 4);
+        JSlider gridSlider = new JSlider(JSlider.HORIZONTAL, 2, 20, 4);
         gridSlider.addChangeListener(this);
         gridSlider.setName("grid");
         panel.add(gridSlider);

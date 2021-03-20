@@ -1,13 +1,8 @@
 package me.andreaiacono.racinglearning.rl;
 
-import com.google.flatbuffers.FlatBufferBuilder;
 import org.deeplearning4j.rl4j.space.Encodable;
-import org.nd4j.linalg.api.buffer.DataBuffer;
-import org.nd4j.linalg.api.ndarray.BaseNDArray;
 import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.api.shape.LongShapeDescriptor;
 import org.nd4j.linalg.factory.Nd4j;
-import org.nd4j.nativeblas.Nd4jCuda;
 
 /**
  * This is a frame of the screen with the track and the car.
