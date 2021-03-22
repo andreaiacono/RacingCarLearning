@@ -1,12 +1,14 @@
 package me.andreaiacono.racinglearning.gui;
 
-import me.andreaiacono.racinglearning.core.GameParameters;
 import me.andreaiacono.racinglearning.core.Game;
+import me.andreaiacono.racinglearning.core.GameParameters;
 import me.andreaiacono.racinglearning.core.player.HumanPlayer;
 import me.andreaiacono.racinglearning.misc.DrivingKeyListener;
 import me.andreaiacono.racinglearning.core.player.QLearningPlayer;
+import me.andreaiacono.racinglearning.core.GameParameters.Type;
 
 import javax.swing.*;
+import java.util.Locale;
 
 public class GameWorker extends SwingWorker<Void, Void> {
 
@@ -26,9 +28,10 @@ public class GameWorker extends SwingWorker<Void, Void> {
         try {
 
             String modelName = params.getValue(GameParameters.MODEL_NAME_PARAM);
+            Type type = Type.valueOf(params.getValue(GameParameters.TYPE_PARAM).toUpperCase(Locale.ROOT));
 
             // car driven by a human player
-            if (params.getValue(GameParameters.TYPE_PARAM).equals(GameParameters.Type.HUMAN.toString())) {
+            if (type == Type.HUMAN) {
                 long raceStartTime = System.currentTimeMillis();
                 new HumanPlayer(game, listener).race(raceStartTime);
 
@@ -40,7 +43,7 @@ public class GameWorker extends SwingWorker<Void, Void> {
 //                }
             }
             // RL train of driving a car
-            else if (params.getValue(GameParameters.TYPE_PARAM).equals(GameParameters.Type.MACHINE_LEARN.toString())) {
+            else if (type == Type.TRAIN) {
                 if (modelName == null) {
                     System.out.println("The model name is needed. (-m argument).");
                     System.exit(-1);
@@ -49,7 +52,7 @@ public class GameWorker extends SwingWorker<Void, Void> {
 
             }
             // machine race using a previously trained model
-            else if (params.getValue(GameParameters.TYPE_PARAM).equals(GameParameters.Type.MACHINE_RACE.toString())) {
+            else if (type == Type.RACE) {
                 if (modelName == null) {
                     System.out.println("The model name is needed. (-m argument).");
                     System.exit(-1);

@@ -10,28 +10,35 @@ public class GameParameters {
     private final CommandLine cmd;
     public final static String TYPE_PARAM = "t";
     public final static String DRAW_INFO_PARAM = "i";
-    public final static String USE_BW_PARAM = "b";
+    public final static String DRAW_CHECKPOINTS = "k";
+    public final static String BATCH_SIZE_PARAM = "b";
     public static final String MODEL_NAME_PARAM = "m";
-    public static final String SIZE_PARAM = "s";
+    public static final String SCREEN_SIZE_PARAM = "s";
     public static final String TRACK_DURATION = "d";
-    public static final String SCALE_PARAM = "c";
+    public static final String MAGNIFY_PARAM = "g";
+    public static final String SHOW_GRAPH_PARAM = "h";
+    public static final String SHOW_TRACK = "o";
     public static final String EASY_PARAM = "e";
     public static final String SIMPLE_CAR_PARAM = "p";
     public static final String TILES_NUMBER_PARAM = "n";
 
+
     public enum Type {
-        HUMAN, MACHINE_LEARN, MACHINE_RACE;
+        HUMAN, TRAIN, RACE;
     }
 
     public GameParameters(String[] args) throws Exception {
 
         Options options = new Options();
-        options.addOption(TYPE_PARAM, true, "Racing type: [HUMAN, LEARN, RACE]");
+        options.addOption(TYPE_PARAM, true, "Racing type: [HUMAN, TRAIN, RACE]");
         options.addOption(DRAW_INFO_PARAM, false, "Draws info on the screen");
-        options.addOption(USE_BW_PARAM, false, "Draws the screen in Black&White");
+        options.addOption(DRAW_CHECKPOINTS, false, "Draws the checkpoints in the track");
+        options.addOption(SHOW_GRAPH_PARAM, false, "Shows the graph window");
+        options.addOption(SHOW_TRACK, false, "Shows the track window");
+        options.addOption(BATCH_SIZE_PARAM, true, "The size of the mini batch. Defaults to 32.");
         options.addOption(MODEL_NAME_PARAM, true, "The filename of the model to load/save");
-        options.addOption(SIZE_PARAM, true, "The size in pixel of the screen");
-        options.addOption(SCALE_PARAM, true, "The scale of the shown track");
+        options.addOption(SCREEN_SIZE_PARAM, true, "The size in pixel of the screen");
+        options.addOption(MAGNIFY_PARAM, true, "The magnifier for the screen window");
         options.addOption(TILES_NUMBER_PARAM, true, "The number of tiles for generating the random track");
         options.addOption(SIMPLE_CAR_PARAM, false, "Draws a simple car (a square) instead of a more complex");
         options.addOption(EASY_PARAM, true, "The percentage of an easy track");
@@ -54,14 +61,13 @@ public class GameParameters {
         return cmd.getOptionValue(paramName);
     }
 
-    public int getValueWithDefault(String paramName, int defaultValue) {
-        return isProvided(paramName) ? Integer.valueOf(cmd.getOptionValue(paramName)) : defaultValue;
+    public int getInt(String paramName, int defaultValue) {
+        return isProvided(paramName) ? Integer.parseInt(cmd.getOptionValue(paramName)) : defaultValue;
     }
 
-    public double getDouble(String paramName) {
-        return Double.parseDouble(cmd.getOptionValue(paramName));
+    public float getFloat(String paramName, float defaultValue) {
+        return isProvided(paramName) ? Float.parseFloat(cmd.getOptionValue(paramName)) : defaultValue;
     }
-
     public boolean getBool(String paramName) {
         return cmd.hasOption(paramName);
     }

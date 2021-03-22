@@ -4,13 +4,20 @@ import me.andreaiacono.racinglearning.core.Car;
 import me.andreaiacono.racinglearning.core.GameParameters;
 import me.andreaiacono.racinglearning.misc.DrivingKeyListener;
 import me.andreaiacono.racinglearning.track.RandomRaceTrack;
+import me.andreaiacono.racinglearning.track.RandomTrackGenerator;
+import me.andreaiacono.racinglearning.track.Track;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.List;
 import java.util.Random;
+
+import static me.andreaiacono.racinglearning.core.GameParameters.TILES_NUMBER_PARAM;
 
 public class TrackPanel extends JPanel {
 
@@ -19,6 +26,9 @@ public class TrackPanel extends JPanel {
     public static final int CAR_STARTING_ANGLE = 0;
     private final int size;
     private final int tilesNumber;
+    private final float easyTrackRatio;
+    private final boolean drawCheckpoints;
+    private long startTime;
 
     private boolean drawInfo;
 
@@ -30,13 +40,21 @@ public class TrackPanel extends JPanel {
     private BufferedImage trackRaceImage;
     private Stroke carStrokeSize;
     private final static Random random = new Random(1520);
-    private double lastReward;
+    private List<Polygon> checkPoints = new ArrayList<>();
+    private BitSet checkSteps;
+    public boolean isLapCompleted;
+    int checkedPoints = 0;
+    private int totalReward;
+    private static final Font INFO_FONT = new Font("Arial", Font.PLAIN, 11);
+    private float currentReward;
 
     TrackPanel(Car car, DrivingKeyListener listener, int size, GameParameters gameParameters, float scale) {
 
         this.drawInfo = gameParameters.getBool(GameParameters.DRAW_INFO_PARAM);
-        this.tilesNumber = gameParameters.getValueWithDefault(GameParameters.TILES_NUMBER_PARAM, 4);
+        this.tilesNumber = gameParameters.getInt(TILES_NUMBER_PARAM, 4);
         this.size = size;
+        easyTrackRatio = gameParameters.getFloat(GameParameters.EASY_PARAM, 0);
+        drawCheckpoints = gameParameters.getBool(GameParameters.DRAW_CHECKPOINTS);
 
         this.car = car;
         this.gameParameters = gameParameters;
@@ -49,23 +67,26 @@ public class TrackPanel extends JPanel {
         car.setMaxSpeed(size / 30);
 
         carStrokeSize = new BasicStroke((int)(size / (double) 20));
-
+        startTime = System.currentTimeMillis();
         createNew();
     }
 
 
     public void createNew() {
 
-        if (gameParameters.isProvided(GameParameters.EASY_PARAM)) {
-            trackImage = new RandomRaceTrack().getEasyTrack(size, gameParameters.getDouble(GameParameters.EASY_PARAM));
-        }
-        else {
-            // the image of the track (used for checking if the car is on the track or not)
-            trackImage = new RandomRaceTrack().getRandomTrack(size, tilesNumber, random.nextInt());
+        if (easyTrackRatio> 0) {
+            trackImage = new RandomTrackGenerator().getEasyTrack(size, easyTrackRatio);
+            checkPoints = new ArrayList<>();
+            checkSteps = new BitSet(0);
+        } else {
+            Track track = new RandomTrackGenerator().getRandomTrack(size, tilesNumber, 16, drawCheckpoints);
+            trackImage = track.getImage();
+            checkPoints = track.getCheckpoints();
+            checkSteps = new BitSet(checkPoints.size());
         }
 
-        // the image of the track AND the car (based on trackImage)
-        trackRaceImage = new BufferedImage(trackImage.getWidth(), trackImage.getHeight(), RandomRaceTrack.IMAGE_TYPE);
+        // the image used for  the track AND the car (based on trackImage)
+        trackRaceImage = new BufferedImage(trackImage.getWidth(), trackImage.getHeight(), RandomTrackGenerator.IMAGE_TYPE);
         car.reset();
     }
 
@@ -75,66 +96,116 @@ public class TrackPanel extends JPanel {
      * track, the reward will be low.
      *
      * @return the reward for the current position of the car
-     * @param movesNumber
      */
-    public double getReward(int movesNumber) {
+    public float getReward() {
 
 //        if (movesNumber == RacingQL.MAX_MOVES_PER_EPOCH) {
 //            return 100d;
 //        }
 
         if (isCarOutsideScreen()) {
-            return -100d;
+            currentReward = -10;
+        } else {
+
+            //  the faster the car goes, the better
+            //  int reward = (int) car.getVelocity().speed;
+
+            //  if (car.getVelocity().speed == 0) {
+            //      return 0;
+            //  }
+
+            // being on track is a lot better than being off track
+            currentReward = isCarOnTrack() ? 0.0f : -0.1f;
+
+            // the more checkpoints passed in order, the more reward gained
+            currentReward += getCheckPointsReward();
         }
 
-        // the faster the car goes, the better
-        int reward = (int) car.getVelocity().speed;
+        totalReward += currentReward;
+        return currentReward;
 
-//        if (car.getVelocity().speed == 0) {
-//            return 0;
-//        }
-
-//        // the more checkpoints passed in order, the more reward gained
-//        reward += getCheckPointsReward();
-
-        // being on track is a lot better than being off track
-        reward += isCarOnTrack() ? 10 : -10;
-
-//        // the more time passes, the worse is  /// MISLEADING!
+//        // the more time passes, the worse is  /// MISLEADING, it runs out of the screen!
 //        long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
 //        reward += 20 * elapsedTime;
 
-        lastReward = reward / 500d;
-        return lastReward;
+        //lastReward = reward / 500f;
+        //return lastReward;
+    }
+
+    private void updateCheckpoints() {
+        if (checkPoints.size() > 0) {
+            boolean areAllSet = true;
+            for (int i = 0; i < checkPoints.size(); i++) {
+                if (checkPoints.get(i).contains(car.getX(), car.getY())) {
+                    checkSteps.set(i);
+                }
+                if (!checkSteps.get(i)) {
+                    areAllSet = false;
+                }
+            }
+
+            if (areAllSet && checkPoints.get(0).contains(car.getX(), car.getY())) {
+                isLapCompleted = true;
+            }
+        }
+    }
+
+
+    // the checkpoints give a positive reward only if they're passed in the correct sequence
+    private int getCheckPointsReward() {
+
+        // not yet started, neutral reward
+        if (checkSteps.length() == 0) {
+            return 0;
+        }
+
+        int firstNotPassedCheckPoint = -1;
+
+        for (int i = 0; i < checkSteps.length(); i++) {
+            if (!checkSteps.get(i) && firstNotPassedCheckPoint == -1) {
+                firstNotPassedCheckPoint = i;
+            }
+        }
+
+        // if a checkpoint was missed
+        if (firstNotPassedCheckPoint != -1 && checkSteps.cardinality() != firstNotPassedCheckPoint - 1) {
+//            return -5000;
+        }
+
+        // returns a reward only when a new checkpoint is passed|
+        if (checkSteps.cardinality() > checkedPoints) {
+            checkedPoints++;
+            return checkSteps.cardinality() * 2;
+        } else {
+            return 0;
+        }
     }
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        updateCheckpoints();
         // the trackRaceImage is updated in update
-
-        // draws info
-//        if (drawInfo) {
-//            String time = addZeroIfNeeded(this.time / 1000) + ":" + addZeroIfNeeded((this.time % 1000) / 10);
-//            System.out.print("\r[" + time + "] REWARD: " + getReward(0) + " - CAR:" + car.toString());
-//            imageGraphics.setFont(INFO_FONT);
-//            imageGraphics.drawString(car.toString(), 10, 10);
-//            imageGraphics.drawString("REWARD: " + getReward(), 10, 20);
-//            imageGraphics.drawString("Checks: " + checkSteps.toString(), 10, 30);
-//            imageGraphics.drawString("TIME: " + time, 10, 40);
-//        }
 
         // draws the image to the panel
         g.drawImage(trackRaceImage.getScaledInstance((int) (size * scale), (int) (size * scale), Image.SCALE_FAST), 0, 0, null);
 
+        if (drawInfo) {
+            long currentTime = System.currentTimeMillis() - startTime;
+            String time = addZeroIfNeeded(currentTime / 1000) + ":" + addZeroIfNeeded((currentTime% 1000) / 10);
+            System.out.print("\r[" + time + "] REWARD: " + getReward() + " - CAR:" + car.toString());
+            g.setFont(INFO_FONT);
+            g.setColor(Color.WHITE);
+            g.drawString(car.toString(), 10, 10);
+            g.drawString("CurReward: " + currentReward, 10, 25);
+            g.drawString("TotReward: " + totalReward, 10, 40);
+            g.drawString("Checks: " + checkSteps.toString(), 10, 55);
+            g.drawString("TIME: " + time, 10, 70);
+        }
+
         // adds info of reward
-        if (lastReward < 0) {
-            g.setColor(Color.RED);
-        }
-        else {
-            g.setColor(Color.CYAN);
-        }
-        g.fillRect((int) ((size * scale)-8), (int) ((size * scale)-8), 6, 6);
+        g.setColor((currentReward < 0) ? Color.RED : Color.CYAN);
+        g.fillRect((int) ((size * scale) - 8), (int) ((size * scale) - 8), 6, 6);
     }
 
 
@@ -145,7 +216,9 @@ public class TrackPanel extends JPanel {
         double cy = car.getY();
         imageGraphics.setStroke(carStrokeSize);
 
-        if (!car.isSimple()) {
+        if (car.isSimple()) {
+            imageGraphics.drawLine((int) cx, (int) cy, (int) cx, (int) cy);
+        } else {
             double carTailDirection = (car.getDirection() - 180) % 360;
             double carLength = Math.abs(size / 15);
             // double carLength = Math.abs(car.getVelocity().speed * 1.5);
@@ -156,13 +229,12 @@ public class TrackPanel extends JPanel {
             // draws the car body
             imageGraphics.setColor(CAR_BODY_COLOR);
             imageGraphics.drawLine((int) cx, (int) cy, (int) (cx + cosAngle * 1.01), (int) (cy + sinAngle * 1.01));
+
+            // draws the car head
+            imageGraphics.setColor(CAR_HEAD_COLOR);
+            imageGraphics.drawLine((int) cx, (int) cy, (int) cx, (int) cy);
         }
-
-        // draws the car head
-        imageGraphics.setColor(CAR_HEAD_COLOR);
-        imageGraphics.drawLine((int) cx, (int) cy, (int) cx, (int) cy);
     }
-
     private String addZeroIfNeeded(long value) {
         return value < 10 ? "0" + value : "" + value;
     }
@@ -215,5 +287,10 @@ public class TrackPanel extends JPanel {
         return size;
     }
 
+
+    public void reset() {
+        checkSteps = new BitSet(checkPoints.size());
+        totalReward = 0;
+        startTime = System.currentTimeMillis();    }
 
 }

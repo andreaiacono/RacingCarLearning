@@ -3,6 +3,8 @@ package me.andreaiacono.racinglearning.core;
 import me.andreaiacono.racinglearning.gui.GraphFrame;
 import me.andreaiacono.racinglearning.gui.TrackPanel;
 
+import static me.andreaiacono.racinglearning.rl.RacingQL.MAX_MOVES_PER_EPOCH;
+
 public class Game {
 
     private int trackDuration;
@@ -19,12 +21,12 @@ public class Game {
     public Game(Car car, TrackPanel track, GameParameters params) {
         this.car = car;
         this.track = track;
-        this.trackDuration = params.getValueWithDefault(GameParameters.TRACK_DURATION, Integer.MAX_VALUE);
+        this.trackDuration = params.getInt(GameParameters.TRACK_DURATION, Integer.MAX_VALUE);
         this.params = params;
         if (trackDuration == 0) {
             trackDuration = Integer.MAX_VALUE;
         }
-        hasGraph = params.getValue(GameParameters.TYPE_PARAM).equals(GameParameters.Type.MACHINE_LEARN.toString());
+        hasGraph = params.getBool(GameParameters.SHOW_GRAPH_PARAM);
         if (hasGraph) {
             this.graphFrame = new GraphFrame();
         }
@@ -45,10 +47,11 @@ public class Game {
         if (epoch % trackDuration == 0) {
             track.createNew();
         }
+        track.reset();
     }
 
     public boolean isOver() {
-        return track.isCarOutsideScreen();
+        return track.isCarOutsideScreen() || movesNumber >= MAX_MOVES_PER_EPOCH;
     }
 
     public double move(Command command) {
@@ -64,7 +67,7 @@ public class Game {
         // refreshes the screen with the new position
         track.updateTrack();
 
-        double reward = track.getReward(movesNumber);
+        double reward = track.getReward();
         epochReward += reward;
         return reward;
     }

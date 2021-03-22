@@ -18,12 +18,12 @@ public class MainFrame extends JFrame {
         super("Racing Car - " + params.getValue(GameParameters.TYPE_PARAM));
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        int size = params.isProvided(GameParameters.SIZE_PARAM)
-                ? Integer.parseInt(params.getValue(GameParameters.SIZE_PARAM))
+        int size = params.isProvided(GameParameters.SCREEN_SIZE_PARAM)
+                ? Integer.parseInt(params.getValue(GameParameters.SCREEN_SIZE_PARAM))
                 : 100;
 
-        float scale = params.isProvided(GameParameters.SCALE_PARAM) ?
-                Float.parseFloat(params.getValue(GameParameters.SCALE_PARAM))
+        float scale = params.isProvided(GameParameters.MAGNIFY_PARAM) ?
+                Float.parseFloat(params.getValue(GameParameters.MAGNIFY_PARAM))
                 : 1;
 
         // creates the car
@@ -35,7 +35,7 @@ public class MainFrame extends JFrame {
 
         panel.setFocusable(true);
         add(panel);
-        setSize((int) (size * scale), (int) (size * scale) + 30);
+        setSize((int) (size * scale), (int) (size * scale) + 37);
         setLocation(100, 50);
 
         // starts the game

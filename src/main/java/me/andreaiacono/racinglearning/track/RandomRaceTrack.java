@@ -75,7 +75,7 @@ public class RandomRaceTrack {
                         case LEFT_TO_DOWN:
                             g.drawImage(downToLeftArc, i * cellSize, j * cellSize, null);
                             break;
-                        case DOWN_TO_RIGH:
+                        case DOWN_TO_RIGHT:
                         case RIGHT_TO_DOWN:
                             g.drawImage(downToRightArc, i * cellSize, j * cellSize, null);
                             break;

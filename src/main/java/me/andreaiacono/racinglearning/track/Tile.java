@@ -9,7 +9,7 @@ public enum Tile {
     UP_TO_RIGHT(Side.UP, Side.RIGHT, '└'),
     UP_TO_LEFT(Side.UP, Side.LEFT, '┘'),
     DOWN_TO_LEFT(Side.DOWN, Side.LEFT, '┐'),
-    DOWN_TO_RIGH(Side.DOWN, Side.RIGHT, '┌'),
+    DOWN_TO_RIGHT(Side.DOWN, Side.RIGHT, '┌'),
     LEFT_TO_RIGHT(Side.LEFT, Side.RIGHT, '─'),
     RIGHT_TO_LEFT(Side.RIGHT, Side.LEFT, '─'),
     UP_TO_DOWN(Side.UP, Side.DOWN, '│'),

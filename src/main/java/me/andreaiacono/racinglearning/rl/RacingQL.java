@@ -8,6 +8,7 @@ import org.deeplearning4j.rl4j.learning.sync.qlearning.QLearning;
 import org.deeplearning4j.rl4j.learning.sync.qlearning.discrete.QLearningDiscreteConv;
 import org.deeplearning4j.rl4j.network.dqn.DQNFactoryStdConv;
 import org.deeplearning4j.rl4j.policy.DQNPolicy;
+import org.deeplearning4j.rl4j.util.DataManager;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -65,13 +66,13 @@ public class RacingQL {
     QLearning.QLConfiguration QL_CONF = QLearning.QLConfiguration.builder()
             .seed(123)
             .maxEpochStep(MAX_MOVES_PER_EPOCH)
-            .maxStep(1000000)
-            .expRepMaxSize(1000000)
+            .maxStep(5000000)
+            .expRepMaxSize(5000000)
             .batchSize(32)
             .targetDqnUpdateFreq(10000)
             .updateStart(500)
-            .rewardFactor(0.0001)
-            .gamma(0.0001)
+            .rewardFactor(0.01)
+            .gamma(0.5)
             .errorClamp(100.0)
             .minEpsilon(0.1f)
             .epsilonNbStep(100000)
@@ -85,7 +86,7 @@ public class RacingQL {
 
 
     private static DQNFactoryStdConv.Configuration RACING_NET_CONFIG = new DQNFactoryStdConv.Configuration(
-            0.9,    //learning rate
+            0.0001,    //learning rate
             0.000,              //l2 regularization
             null,
             null
@@ -98,6 +99,7 @@ public class RacingQL {
 
     public void learn(String model) throws Exception {
 
+        DataManager manager = new DataManager(true);
         RacingMDP mdp = new RacingMDP(game);
 
         Process p = Runtime.getRuntime().exec("hostname");
@@ -113,10 +115,10 @@ public class RacingQL {
         dql.train();
 
         long elapsed = System.currentTimeMillis() - start;
-        int seconds = (int) (elapsed / 1000) % 60 ;
-        int minutes = (int) ((elapsed / (1000*60)) % 60);
-        int hours   = (int) ((elapsed / (1000*60*60)) % 24);
-        int days   = (int) ((elapsed / (1000*60*60*24)));
+        int seconds = (int) (elapsed / 1000) % 60;
+        int minutes = (int) ((elapsed / (1000 * 60)) % 60);
+        int hours = (int) ((elapsed / (1000 * 60 * 60)) % 24);
+        int days = (int) ((elapsed / (1000 * 60 * 60 * 24)));
         String elapsedTime = String.format("%dd:%02dh:%02dm:%02ds", days, hours, minutes, seconds);
 
         dql.getPolicy().save(filename + ".model");
@@ -147,7 +149,7 @@ public class RacingQL {
             writer.append("\tOffset Y: ").append(String.valueOf(HP_CONF.getOffsetY())).append("\n");
             writer.append("\tSkip Frame: ").append(String.valueOf(HP_CONF.getSkipFrame())).append("\n");
             if (game.getGameParams().isProvided(GameParameters.EASY_PARAM)) {
-                writer.append("\tEasy Mode: ").append("" + game.getGameParams().getDouble(GameParameters.EASY_PARAM)).append("\n");
+                writer.append("\tEasy Mode: ").append("" + game.getGameParams().getFloat(GameParameters.EASY_PARAM, 0.5f)).append("\n");
             }
 
             writer.append("\nQL CONFIGURATION:\n");
@@ -206,7 +208,7 @@ public class RacingQL {
         }
 
         mdp2.close();
-        Logger.getAnonymousLogger().info("average: " + rewards/1000);
+        Logger.getAnonymousLogger().info("average: " + rewards / 1000);
 
 //
 ////        DataManager manager = new DataManager(true);
