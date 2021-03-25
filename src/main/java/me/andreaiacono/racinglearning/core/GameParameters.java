@@ -5,6 +5,8 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 
+import java.util.Arrays;
+
 public class GameParameters {
 
     private final CommandLine cmd;
@@ -48,7 +50,7 @@ public class GameParameters {
         cmd = parser.parse( options, args);
 
         if (cmd.getOptionValue(GameParameters.TYPE_PARAM) == null) {
-            System.out.println("No type argument specified. Argument -t can be [HUMAN, MACHINE_LEARN, MACHINE_RACE]");
+            System.out.println("No type argument specified. Argument -t can be " + Arrays.toString(Type.values()));
             System.exit(-1);
         }
     }

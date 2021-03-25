@@ -1,0 +1,68 @@
+RL Notes
+
+"Be careful what you wish for, you may receive it", W. W. Jacobs
+
+First, reward was subtracting the number of steps: the idea was to let the car finish the lap in less time. But, what it came out with was to just get out of the screen just after started, so to minimize that loss. Then, instead of subtracting, I started adding the number of step because I wanted the car not to get out as soon as possible but to stay into the track as long as possible. Result: it was just standing still on the starting line for accumulating rewards.. :-D
+
+
+The trick was to make it last longer (even if wandering around) just to have the time to understand what to do in the track,; if the car lasted just few seconds, it just optimized for a local minimum.
+
+- alpha (learning rate),how quickly the network converge to the value (it could stuck in a local maximum)
+- epsilon [0,1]: più basso il valore più exploitation, mentre più alto più exploration
+- gamma: future reward - If it is equal to one, the agent values future reward JUST AS MUCH as current reward. [If Gamma is closer to zero, the agent will tend to consider only immediate rewards. If Gamma is closer to one, the agent will consider future rewards with greater weight, willing to delay the reward.]
+
+Reward:
+- changed isCarOnTrack from -50:50 to -50:150, better results
+- (car 33) reward -10000 when out of screen: worse results;
+- (car 34) without the -10000 reward it just tries to get out of the screen asap
+- (car 35) returned config values to car 32: should have same results
+- (car 36) added more reward as more time passes; also removed check if car inside screen
+- car 38: primo su linux, stessi param
+- car39: epsilon a 0.1
+- car40: epsilon a 0.9 (molta exploration, poca exploitation)
+- car41: abbassata espilon a 0.2 e dimezzato il reward legato al numero di passi 
+- car42: portata gamma a 0.1
+- car43: portato il reward scaling 0.1
+- car44: portato il rewardscaling a 0.8
+- car45: abbassato learning rate a 0.1
+- car46: learning rate a 0.5 e max step by epoch giù a 2500
+- car47: learning rate a 0.8, min epsilon a 0.0001 e gamma a 1, circa 6g . First run stopped because it was just stuck for reward to raise. Seccond run, modified reward to add just a constant for every step instead of the number of moves. Third run: reward now adds 50 instead of 20.
+- car48: reward -500 e 500 per ontrack e offtrack; gamma down to 0.6
+car 49: riportato config car36, rimesso check inside screen
+car51: reward: car halted now is -=50 (and not return 50); remove the epoch bonus from Game class and put into reward (it was negative, set to positive); same QL params. There was an implementation error: the epoch bonus was computed from the start ofthe learning and not from the start of the epoch. (to re-run).
+car 52: introduced random new track for every epoch
+car53: same but longer run
+car54: set gamma and reward scaling to 0
+car55: min epsilon a 0.1
+car56: track duration a 1 e not car in track a -100 (da -500 che era) nel getReward()
+car57: gamma e reward scaling a 0.9
+car58: track duration a 2
+
+removed nasty bug
+
+car 66: reward 100:-100. Couldn't grow over an upper bound
+car 67: grid size: 3 e circuito ovale (fixed rand value)
+car82: changed rendering of the car, now more accurate
+car83: changed gamma to 1, and alpha to 0.9
+car84: car now a bit  longer and sizer to 32
+car85: reward 500:-100 per stare in track e epsilon a 0.1; cambiata la TrackImage!
+car86: cambiata solo la paintImmediaetly
+car87: new random track every time; abbassato a 24 il size
+car88: alpha 0.7, rewad e gamma a 0.999, epsilon a 0.99, reward diviso per 10 e diminuito il   (expected: 5days) 
+car89: gamma a 0,0001, 1 day duration, removed rewrd 0 if speed=0
+car90: rewardFactor a 0.001 
+car 91: raddoppiato il tempo di esecuzioen
+----
+car95: il reward è ora è [-1, 1]
+car96: cambiato colore del tracciato (più scuro e macchina più piccola); size 32
+car97: history length now 4; HP skip frame every 4; alpha: 0.9; gamma/reward=0.5
+car98: gamma 0,001; epsilon=0.4; skipframe=1
+car99: reduced the commands (only 4 accel, brake, left, right), skipframe=4
+car100: AUTO_SLOW_DOWN a 0.1; tolto command BRAKE; epsilon a 0.2, alpha a 0.7
+car101: alpha=0,999; epsilon=0,1; can steer standing still; car head different color;
+car102: alpha=0.9; skipframe=2
+car103: epsilon=0.2; skipframe=3
+car104: easy mode: 0.4
+car105: reimmesso no-op; added positive reward for ending the epoch
+car106: epsilon: 0,1
+car107: 4 days

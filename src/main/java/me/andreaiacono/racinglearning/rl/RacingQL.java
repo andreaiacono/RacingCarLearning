@@ -179,8 +179,8 @@ public class RacingQL {
     }
 
     private String getNewFilename(String basename) {
-        long index = 60;
-        String directory = "src/main/resources/models/";
+        long index = 10;
+        String directory = "src/main/resources/models/deeplearning4java/";
         String filename;
         while (true) {
             filename = String.format("%s%s_%d", directory, basename, index);
