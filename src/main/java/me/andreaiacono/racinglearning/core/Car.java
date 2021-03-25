@@ -26,7 +26,7 @@ public class Car {
     private int maxSpeed;
 
     // draws a square instead of a car
-    private boolean isSimple = false;
+    private boolean isSimple = true;
 
     public Car(boolean isSimple) {
         this.isSimple = isSimple;

@@ -2,8 +2,8 @@ package me.andreaiacono.racinglearning.track;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -221,7 +221,7 @@ public class RandomTrackGenerator {
                 Tile currentTile = tiles[currentX][currentY];
 
                 // gets a random tile from the ones allowed on this place
-                List<Tile> allowedTiles = getAllowedTiles(currentX, currentY, size, tiles);
+                java.util.List<Tile> allowedTiles = getAllowedTiles(currentX, currentY, size, tiles);
                 if (allowedTiles.size() == 0) {
                     isUncomplete = true;
                     break;
@@ -287,7 +287,7 @@ public class RandomTrackGenerator {
         return new TrackSkeleton(tiles, positions);
     }
 
-    private List<Tile> getAllowedTiles(int inputX, int inputY, int size, Tile[][] tiles) {
+    private java.util.List<Tile> getAllowedTiles(int inputX, int inputY, int size, Tile[][] tiles) {
 
         Tile currentTile = tiles[inputX][inputY];
         int newX = inputX + currentTile.getOutput().getX();

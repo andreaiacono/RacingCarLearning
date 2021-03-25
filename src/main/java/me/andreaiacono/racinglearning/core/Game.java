@@ -3,12 +3,13 @@ package me.andreaiacono.racinglearning.core;
 import me.andreaiacono.racinglearning.gui.GraphFrame;
 import me.andreaiacono.racinglearning.gui.TrackPanel;
 
-import static me.andreaiacono.racinglearning.rl.RacingQL.MAX_MOVES_PER_EPOCH;
+import java.awt.image.BufferedImage;
+
+import static me.andreaiacono.racinglearning.misc.Constants.MAX_MOVES_NUMBER;
 
 public class Game {
 
     private int trackDuration;
-    private GameParameters params;
     private int epoch;
     private int cumulativeMovesNumber;
     private int movesNumber;
@@ -21,19 +22,22 @@ public class Game {
     public Game(Car car, TrackPanel track, GameParameters params) {
         this.car = car;
         this.track = track;
-        this.trackDuration = params.getInt(GameParameters.TRACK_DURATION, Integer.MAX_VALUE);
-        this.params = params;
+        this.trackDuration = Integer.MAX_VALUE;
         if (trackDuration == 0) {
             trackDuration = Integer.MAX_VALUE;
         }
         hasGraph = params.getBool(GameParameters.SHOW_GRAPH_PARAM);
-        if (hasGraph) {
+        if (params.getBool(GameParameters.SHOW_GRAPH_PARAM)) {
             this.graphFrame = new GraphFrame();
         }
     }
 
     public byte[] getScreenFrame() {
         return track.getCurrentFrame();
+    }
+
+    public BufferedImage getCurrentImage() {
+        return track.getCurrentImage();
     }
 
     public void reset() {
@@ -44,18 +48,17 @@ public class Game {
         }
         movesNumber = 0;
         car.reset();
+        track.reset();
         if (epoch % trackDuration == 0) {
             track.createNew();
         }
-        track.reset();
     }
 
     public boolean isOver() {
-        return track.isCarOutsideScreen() || movesNumber >= MAX_MOVES_PER_EPOCH;
+        return track.isCarOutsideScreen() || movesNumber > MAX_MOVES_NUMBER || track.isLapCompleted;
     }
 
-    public double move(Command command) {
-
+    public float move(Command command) {
         movesNumber++;
         cumulativeMovesNumber++;
         car.applyCommand(command);
@@ -67,7 +70,12 @@ public class Game {
         // refreshes the screen with the new position
         track.updateTrack();
 
-        double reward = track.getReward();
+//        try {
+//            Thread.sleep(30);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+        float reward = track.getReward();
         epochReward += reward;
         return reward;
     }
@@ -82,15 +90,15 @@ public class Game {
         return movesNumber;
     }
 
-    public double getCumulativeReward() {
-        return epochReward;
+    public long getEpochReward() {
+        return (long) epochReward;
     }
 
     public int getCumulativeMovesNumber() {
         return cumulativeMovesNumber;
     }
 
-    public GameParameters getGameParams() {
-        return params;
+    public int getPanelSize() {
+        return track.getSizeInPixel();
     }
 }

@@ -32,7 +32,7 @@ public class GraphFrame extends JFrame {
         super("Rewards Graph");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(800, 500);
-        setLocation(400,200);
+        setLocation(500,200);
 
         rewardSeries = new TimeSeries("Epoch cumulative rewards");
         averageSeries = new TimeSeries("Average Rewards");
@@ -73,7 +73,7 @@ public class GraphFrame extends JFrame {
             List<TimeSeriesDataItem> items = rewardSeries.getItems();
 
             totalSum += items.get(items.size()-1).getValue().doubleValue();
-            if (epoch > MOVING_WINDOW) {
+            if (items.size() > MOVING_WINDOW) {
                 int indexToDelete = items.size() - MOVING_WINDOW;
                 totalSum -= items.get(indexToDelete).getValue().doubleValue();
             }

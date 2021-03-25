@@ -1,9 +1,7 @@
 package me.andreaiacono.racinglearning.gui;
 
 import me.andreaiacono.racinglearning.core.Car;
-import me.andreaiacono.racinglearning.core.GameParameters;
 import me.andreaiacono.racinglearning.misc.DrivingKeyListener;
-import me.andreaiacono.racinglearning.track.RandomRaceTrack;
 import me.andreaiacono.racinglearning.track.RandomTrackGenerator;
 import me.andreaiacono.racinglearning.track.Track;
 
@@ -17,60 +15,65 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.Random;
 
-import static me.andreaiacono.racinglearning.core.GameParameters.TILES_NUMBER_PARAM;
+import static me.andreaiacono.racinglearning.track.RandomTrackGenerator.GRASS_COLOR;
 
 public class TrackPanel extends JPanel {
 
     private static final Color CAR_BODY_COLOR = new Color(255, 180, 255);
     private static final Color CAR_HEAD_COLOR = Color.YELLOW;
     public static final int CAR_STARTING_ANGLE = 0;
+
     private final int size;
     private final int tilesNumber;
-    private final float easyTrackRatio;
-    private final boolean drawCheckpoints;
     private long startTime;
 
     private boolean drawInfo;
+    private boolean drawChekPoints;
+    private float easyTrackRatio;
 
     // the racing track with the car drawn on it
     private BufferedImage trackImage;
     private final Car car;
-    private GameParameters gameParameters;
-    private float scale;
+    private long time;
+    private final float scale;
     private BufferedImage trackRaceImage;
-    private Stroke carStrokeSize;
-    private final static Random random = new Random(1520);
+    private final Stroke carStrokeSize;
+    private final static Random random = new Random(3);
+    //    private final static Random random = new Random(1520);
+    private float currentReward;
+    private float totalReward;
+    private final DrivingKeyListener keyListener = new DrivingKeyListener();
+
+    private static final Font INFO_FONT = new Font("Arial", Font.PLAIN, 11);
     private List<Polygon> checkPoints = new ArrayList<>();
+
     private BitSet checkSteps;
     public boolean isLapCompleted;
-    int checkedPoints = 0;
-    private int totalReward;
-    private static final Font INFO_FONT = new Font("Arial", Font.PLAIN, 11);
-    private float currentReward;
 
-    TrackPanel(Car car, DrivingKeyListener listener, int size, GameParameters gameParameters, float scale) {
+    public TrackPanel(Car car, boolean drawInfo, boolean drawChekPoints, int size, float scale, float easyTrackRatio) {
 
-        this.drawInfo = gameParameters.getBool(GameParameters.DRAW_INFO_PARAM);
-        this.tilesNumber = gameParameters.getInt(TILES_NUMBER_PARAM, 4);
+        this.drawInfo = drawInfo;
+        this.drawChekPoints = drawChekPoints;
+        this.easyTrackRatio = easyTrackRatio;
+        this.tilesNumber = 4;
         this.size = size;
-        easyTrackRatio = gameParameters.getFloat(GameParameters.EASY_PARAM, 0);
-        drawCheckpoints = gameParameters.getBool(GameParameters.DRAW_CHECKPOINTS);
 
         this.car = car;
-        this.gameParameters = gameParameters;
         this.scale = scale;
         setFocusable(true);
-        addKeyListener(listener);
+        addKeyListener(keyListener);
+
+        startTime = System.currentTimeMillis();
 
         Point startingPosition = new Point(size / 2, (size / tilesNumber) / 2);
         car.setStartingPosition(startingPosition);
         car.setMaxSpeed(size / 30);
 
-        carStrokeSize = new BasicStroke((int)(size / (double) 20));
-        startTime = System.currentTimeMillis();
-        createNew();
-    }
+        carStrokeSize = new BasicStroke((int) (size / (double) 20));
 
+        createNew();
+        invalidate();
+    }
 
     public void createNew() {
 
@@ -79,7 +82,7 @@ public class TrackPanel extends JPanel {
             checkPoints = new ArrayList<>();
             checkSteps = new BitSet(0);
         } else {
-            Track track = new RandomTrackGenerator().getRandomTrack(size, tilesNumber, 16, drawCheckpoints);
+            Track track = new RandomTrackGenerator().getRandomTrack(size, tilesNumber, 16, drawChekPoints);
             trackImage = track.getImage();
             checkPoints = track.getCheckpoints();
             checkSteps = new BitSet(checkPoints.size());
@@ -150,6 +153,7 @@ public class TrackPanel extends JPanel {
         }
     }
 
+    int checkedPoints = 0;
 
     // the checkpoints give a positive reward only if they're passed in the correct sequence
     private int getCheckPointsReward() {
@@ -169,7 +173,7 @@ public class TrackPanel extends JPanel {
 
         // if a checkpoint was missed
         if (firstNotPassedCheckPoint != -1 && checkSteps.cardinality() != firstNotPassedCheckPoint - 1) {
-//            return -5000;
+            return -10;
         }
 
         // returns a reward only when a new checkpoint is passed|
@@ -235,6 +239,7 @@ public class TrackPanel extends JPanel {
             imageGraphics.drawLine((int) cx, (int) cy, (int) cx, (int) cy);
         }
     }
+
     private String addZeroIfNeeded(long value) {
         return value < 10 ? "0" + value : "" + value;
     }
@@ -243,6 +248,10 @@ public class TrackPanel extends JPanel {
         WritableRaster raster = trackRaceImage.getRaster();
         DataBufferByte buffer = (DataBufferByte) raster.getDataBuffer();
         return buffer.getData();
+    }
+
+    public BufferedImage getCurrentImage() {
+        return trackRaceImage;
     }
 
     public boolean isCarOutsideScreen() {
@@ -259,7 +268,7 @@ public class TrackPanel extends JPanel {
         int green = (pixel >> 8) & 0xff;
         int blue = (pixel) & 0xff;
 
-        return red == 0 && green == 0 && blue == 0;
+        return !(red == GRASS_COLOR.getRed() && green == GRASS_COLOR.getGreen() && blue == GRASS_COLOR.getBlue());
     }
 
     public void updateTrack() {
@@ -287,10 +296,13 @@ public class TrackPanel extends JPanel {
         return size;
     }
 
+    public DrivingKeyListener getKeyListener() {
+        return keyListener;
+    }
 
     public void reset() {
         checkSteps = new BitSet(checkPoints.size());
         totalReward = 0;
-        startTime = System.currentTimeMillis();    }
-
+        startTime = System.currentTimeMillis();
+    }
 }

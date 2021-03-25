@@ -17,9 +17,9 @@ public class HumanPlayer {
     private final Game game;
     private DrivingKeyListener listener;
 
-    public HumanPlayer(Game game, DrivingKeyListener listener) {
+    public HumanPlayer(Game game) {
         this.game = game;
-        this.listener = listener;
+        this.listener = game.track.getKeyListener();
     }
 
     // the game loop
@@ -28,7 +28,7 @@ public class HumanPlayer {
         TrackPanel circuit = game.track;
         Car car = game.car;
 
-        while (true) {
+        while (!game.isOver()) {
 
             long startTime = System.currentTimeMillis();
 

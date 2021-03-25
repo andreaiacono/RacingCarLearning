@@ -5,6 +5,7 @@ import javax.swing.border.BevelBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.util.List;
 import java.util.Random;
 
 public class RandomTrackDemo extends JFrame implements ChangeListener {
@@ -92,6 +93,7 @@ public class RandomTrackDemo extends JFrame implements ChangeListener {
 class RandomTrackPanel extends JPanel {
 
     private Image randomTrack;
+    private List<Polygon> checkPoints;
     private int size;
     private int grid;
     private int scale;
@@ -119,12 +121,16 @@ class RandomTrackPanel extends JPanel {
 
     public void newTrack() {
         seed = new Random().nextInt();
-        randomTrack = new RandomRaceTrack().getRandomTrack(size, grid, seed);
+        Track track = new RandomTrackGenerator().getRandomTrack(size, grid, seed, false);
+        randomTrack = track.getImage();
+        checkPoints = track.getCheckpoints();
         repaint();
     }
 
     public void repaintTrack() {
-        randomTrack = new RandomRaceTrack().getRandomTrack(size, grid, seed);
+        Track track = new RandomTrackGenerator().getRandomTrack(size, grid, seed, false);
+        randomTrack = track.getImage();
+        checkPoints = track.getCheckpoints();
         repaint();
     }
 }

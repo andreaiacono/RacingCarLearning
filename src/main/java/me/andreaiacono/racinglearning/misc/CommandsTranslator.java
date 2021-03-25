@@ -1,6 +1,6 @@
 package me.andreaiacono.racinglearning.misc;
 
-        import me.andreaiacono.racinglearning.core.Command;
+import me.andreaiacono.racinglearning.core.Command;
 
 public class CommandsTranslator {
 

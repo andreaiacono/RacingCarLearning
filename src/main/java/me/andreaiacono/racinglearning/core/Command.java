@@ -1,5 +1,6 @@
 package me.andreaiacono.racinglearning.core;
 
+import ai.djl.ndarray.NDList;
 
 import java.util.Arrays;
 
@@ -8,34 +9,47 @@ import java.util.Arrays;
  * the possible moves of the car. Each of the two directions can have three values [-1, 0 1].
  */
 public enum Command {
-    ACCELERATE(1, 0),
-//    BRAKE(-1, 0),
-    TURN_LEFT(0, -1),
-    TURN_RIGHT(0, 1),
-//    ACCELERATE_TURN_LEFT(1, -1),
-//    ACCELERATE_TURN_RIGHT(1, 1),
-//    BRAKE_TURN_LEFT(-1, -1),
-//    BRAKE_TURN_RIGHT(-1, 1),
-    NO_OP(0, 0);
 
-    private int frontal;
-    private int lateral;
+    ACCELERATE(new int[]{1, 0}),
+//    BRAKE(new int[]{-1, 0}),
+    TURN_LEFT(new int[]{0, -1}),
+    TURN_RIGHT(new int[]{0, 1}),
+//    ACCEL_LEFT(new int[]{1, -1}),
+//    ACC_RIGHT(new int[]{1, 1}),
+//    BRAKE_LEFT(new int[]{-1, -1}),
+//    BRAKE_RIGHT(new int[]{-1, 1}),
+    NO_OP(new int[]{0, 0});
 
-    Command(int frontal, int lateral) {
-        this.frontal = frontal;
-        this.lateral = lateral;
+    public final int[] directions;
+
+    Command(int[] directions) {
+        this.directions = directions;
     }
 
     public static Command getCommand(int frontal, int lateral) {
-        return Arrays.stream(Command.values()).filter(c -> c.frontal == frontal && c.lateral == lateral).findFirst().get();
+        return Arrays
+                .stream(Command.values())
+                .filter(c -> c.directions[0] == frontal && c.directions[1] == lateral)
+                .findFirst()
+                .orElse(NO_OP);
+    }
+
+    public static Command fromAction(NDList action) {
+        int[] values = action.get(0).toIntArray();
+        for (int i=0; i<values.length; i++) {
+            if (values[i] != 0) {
+                return Command.values()[i];
+            }
+        }
+        return NO_OP;
     }
 
     public int getFrontalValue() {
-        return frontal;
+        return directions[0];
     }
 
     public int getLateralValue() {
-        return lateral;
+        return directions[1];
     }
 }
 
