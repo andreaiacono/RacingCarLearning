@@ -201,11 +201,11 @@ public class TrackPanel extends JPanel {
             g.drawString("TotReward: " + totalReward, 10, 40);
             g.drawString("Checks: " + checkSteps.toString(), 10, 55);
             g.drawString("TIME: " + time, 10, 70);
-        }
 
-        // adds info of reward
-        g.setColor((currentReward < 0) ? Color.RED : Color.CYAN);
-        g.fillRect((int) ((size * scale) - 8), (int) ((size * scale) - 8), 6, 6);
+            // adds info of reward
+            g.setColor((currentReward < 0) ? Color.RED : Color.CYAN);
+            g.fillRect((int) ((size * scale) - 8), (int) ((size * scale) - 8), 6, 6);
+        }
     }
 
 
