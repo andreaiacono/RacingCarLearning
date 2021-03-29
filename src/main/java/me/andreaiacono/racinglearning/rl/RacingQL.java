@@ -22,7 +22,7 @@ import static me.andreaiacono.racinglearning.misc.Constants.SCREEN_SIZE;
 
 public class RacingQL {
 
-    public static final int MAX_MOVES_PER_EPOCH = 250;
+    public static final int MAX_MOVES_PER_EPOCH = 500;
     private final Game game;
 
 //    private static HistoryProcessor.Configuration HP_CONF = new HistoryProcessor.Configuration(
@@ -66,8 +66,8 @@ public class RacingQL {
     QLearning.QLConfiguration QL_CONF = QLearning.QLConfiguration.builder()
             .seed(123)
             .maxEpochStep(MAX_MOVES_PER_EPOCH)
-            .maxStep(5000000)
-            .expRepMaxSize(5000000)
+            .maxStep(1_900_000)
+            .expRepMaxSize(1_000_000)
             .batchSize(32)
             .targetDqnUpdateFreq(10000)
             .updateStart(500)
@@ -86,7 +86,7 @@ public class RacingQL {
 
 
     private static DQNFactoryStdConv.Configuration RACING_NET_CONFIG = new DQNFactoryStdConv.Configuration(
-            0.0001,    //learning rate
+            0.01,    //learning rate
             0.000,              //l2 regularization
             null,
             null
