@@ -66,7 +66,7 @@ public class RacingQL {
     QLearning.QLConfiguration QL_CONF = QLearning.QLConfiguration.builder()
             .seed(123)
             .maxEpochStep(MAX_MOVES_PER_EPOCH)
-            .maxStep(1_900_000)
+            .maxStep(10_000_000)
             .expRepMaxSize(1_000_000)
             .batchSize(32)
             .targetDqnUpdateFreq(10000)
