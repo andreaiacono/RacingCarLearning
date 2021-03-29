@@ -27,7 +27,7 @@ public enum Command {
     }
 
     public static Command getCommand(int frontal, int lateral) {
-        return Arrays.stream(Command.values()).filter(c -> c.frontal == frontal && c.lateral == lateral).findFirst().get();
+        return Arrays.stream(Command.values()).filter(c -> c.frontal == frontal && c.lateral == lateral).findFirst().orElse(NO_OP);
     }
 
     public int getFrontalValue() {
