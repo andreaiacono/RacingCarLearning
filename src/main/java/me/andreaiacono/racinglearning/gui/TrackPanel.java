@@ -66,7 +66,8 @@ public class TrackPanel extends JPanel {
         car.setStartingPosition(startingPosition);
         car.setMaxSpeed(size / 30);
 
-        carStrokeSize = new BasicStroke((int)(size / (double) 20));
+//        carStrokeSize = new BasicStroke((int)(size / (double) 20));
+        carStrokeSize = new BasicStroke(1);
         startTime = System.currentTimeMillis();
         createNew();
     }
@@ -169,7 +170,7 @@ public class TrackPanel extends JPanel {
 
         // if a checkpoint was missed
         if (firstNotPassedCheckPoint != -1 && checkSteps.cardinality() != firstNotPassedCheckPoint - 1) {
-//            return -5000;
+            return -1;
         }
 
         // returns a reward only when a new checkpoint is passed|
