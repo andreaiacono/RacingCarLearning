@@ -4,11 +4,13 @@ import me.andreaiacono.racinglearning.core.Game;
 import me.andreaiacono.racinglearning.core.GameParameters;
 import org.apache.commons.io.IOUtils;
 import org.deeplearning4j.rl4j.learning.HistoryProcessor;
+import org.deeplearning4j.rl4j.learning.IEpochTrainer;
 import org.deeplearning4j.rl4j.learning.sync.qlearning.QLearning;
 import org.deeplearning4j.rl4j.learning.sync.qlearning.discrete.QLearningDiscreteConv;
 import org.deeplearning4j.rl4j.network.dqn.DQNFactoryStdConv;
 import org.deeplearning4j.rl4j.policy.DQNPolicy;
 import org.deeplearning4j.rl4j.util.DataManager;
+import org.deeplearning4j.rl4j.util.DataManagerTrainingListener;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -67,7 +69,7 @@ public class RacingQL {
             .seed(123)
             .maxEpochStep(MAX_MOVES_PER_EPOCH)
             .maxStep(10_000_000)
-            .expRepMaxSize(1_000_000)
+            .expRepMaxSize(500_000)
             .batchSize(32)
             .targetDqnUpdateFreq(10000)
             .updateStart(500)
@@ -111,7 +113,23 @@ public class RacingQL {
         // setups and starts training
         QLearningDiscreteConv<ScreenFrameState> dql = new QLearningDiscreteConv(mdp, RACING_NET_CONFIG, HP_CONF, QL_CONF);
         long start = System.currentTimeMillis();
-
+        DataManagerTrainingListener listener = new DataManagerTrainingListener(manager) {
+            @Override
+            public ListenerResponse onNewEpoch(IEpochTrainer trainer) {
+                if (trainer.getEpochCount() % 100 == 0) {
+                    try {
+                        saveRunningConfig(filename + ".config", hostName, dql.getEpochCount(), start, "not yet finished");
+                        dql.getPolicy().save(filename + ".model");
+                        game.saveChartImage(filename + ".png");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                return ListenerResponse.CONTINUE;
+//                return super.onNewEpoch(trainer);
+            }
+        };
+        dql.addListener(listener);
         dql.train();
 
         long elapsed = System.currentTimeMillis() - start;
@@ -179,7 +197,7 @@ public class RacingQL {
     }
 
     private String getNewFilename(String basename) {
-        long index = 10;
+        long index = 1;
         String directory = "src/main/resources/models/deeplearning4java/";
         String filename;
         while (true) {
