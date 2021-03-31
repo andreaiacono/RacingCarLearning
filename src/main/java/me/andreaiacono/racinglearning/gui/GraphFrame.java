@@ -22,9 +22,9 @@ public class GraphFrame extends JFrame {
     private final JFreeChart chart;
     private final TimeSeriesCollection rewardDataset;
     private int epoch;
-    private TimeSeries rewardSeries;
-    private TimeSeries averageSeries;
-    private TimeSeries lengthSeries;
+    private TimeSeries epochRewardsSeries;
+    private TimeSeries averageRewardsSeries;
+    private TimeSeries epochLengthSeries;
     private DecimalFormat decimalFormat = new DecimalFormat("000.000");
     private double totalSum;
 
@@ -34,30 +34,39 @@ public class GraphFrame extends JFrame {
         setSize(800, 500);
         setLocation(400,200);
 
-        rewardSeries = new TimeSeries("Epoch cumulative rewards");
-        averageSeries = new TimeSeries("Average Rewards");
         rewardDataset = new TimeSeriesCollection();
-        rewardDataset.addSeries(averageSeries);
-        rewardDataset.addSeries(rewardSeries);
 
-        lengthSeries = new TimeSeries("Length");
-        TimeSeriesCollection lengthDataset = new TimeSeriesCollection();
-        lengthDataset.addSeries(lengthSeries);
-        chart = org.jfree.chart.ChartFactory.createTimeSeriesChart("Rewards", "time", "reward", rewardDataset, true, true, false);
+        averageRewardsSeries = new TimeSeries("Average Rewards");
+        rewardDataset.addSeries(averageRewardsSeries);
+
+        epochRewardsSeries = new TimeSeries("Epoch cumulative rewards");
+        rewardDataset.addSeries(epochRewardsSeries);
+
+        chart = org.jfree.chart.ChartFactory.createTimeSeriesChart("Rewards", "time", "reward", rewardDataset, true, true, true);
         XYPlot plot = chart.getXYPlot();
+
+        XYLineAndShapeRenderer rewardsRenderer = new XYLineAndShapeRenderer();
+        rewardsRenderer.setSeriesShapesVisible(0, false);
+        rewardsRenderer.setSeriesShapesVisible(1, false);
+        rewardsRenderer.setSeriesStroke(0, new BasicStroke(3f));  // average line is thicker
+        plot.setRenderer(0, rewardsRenderer);
 
         final NumberAxis lengthRangeAxis = new NumberAxis("Epoch Length");
         lengthRangeAxis.setAutoRangeIncludesZero(true);
+
+        TimeSeriesCollection epochLengthsDataset = new TimeSeriesCollection();
+        epochLengthSeries = new TimeSeries("Length");
+        epochLengthsDataset.addSeries(epochLengthSeries);
 
         XYLineAndShapeRenderer lengthRenderer = new XYLineAndShapeRenderer();
         lengthRenderer.setSeriesLinesVisible(0, false);
         lengthRenderer.setSeriesShapesVisible(0, true);
         lengthRenderer.setSeriesShape(0, ShapeUtils.createDiamond(2f));
-        plot.setDataset(1, lengthDataset);
+        plot.setDataset(1, epochLengthsDataset);
         plot.setRangeAxis(1, lengthRangeAxis);
         plot.mapDatasetToRangeAxis(1, 1);
         plot.setRenderer(1, lengthRenderer);
-        ChartUtils.applyCurrentTheme(chart);
+//        ChartUtils.applyCurrentTheme(chart);
 
         this.add(new ChartPanel(chart), BorderLayout.CENTER);
 
@@ -68,9 +77,9 @@ public class GraphFrame extends JFrame {
         if (epochLength != 0) {
             epoch++;
             Millisecond now = new Millisecond(new Date());
-            rewardSeries.addOrUpdate(now, epochReward);
-            lengthSeries.addOrUpdate(now, epochLength);
-            List<TimeSeriesDataItem> items = rewardSeries.getItems();
+            epochRewardsSeries.addOrUpdate(now, epochReward);
+            epochLengthSeries.addOrUpdate(now, epochLength);
+            List<TimeSeriesDataItem> items = epochRewardsSeries.getItems();
 
             totalSum += items.get(items.size()-1).getValue().doubleValue();
             if (epoch > MOVING_WINDOW) {
@@ -78,7 +87,7 @@ public class GraphFrame extends JFrame {
                 totalSum -= items.get(indexToDelete).getValue().doubleValue();
             }
             double average = totalSum / (epoch > MOVING_WINDOW ? MOVING_WINDOW : items.size());
-            averageSeries.addOrUpdate(now, average);
+            averageRewardsSeries.addOrUpdate(now, average);
             chart.setTitle("Epoch #" + epoch + " - Avg Reward: " + decimalFormat.format(average));
         }
     }
